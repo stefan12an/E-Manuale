@@ -11,7 +11,9 @@
     <color name="primary">#303F9F</color>
     <color name="secondary">#BDBDBD</color>
     <color name="confirm">#00897B</color>
-    <color name="warning">#FFA000</color>
+    <color name="warning_700">#FFA000</color>
+    <color name="warning_500">#FFA454</color>
+    <color name="warning_300">#FFAF89</color>
     <color name="remove">#C62828</color>
     <color name="help">#673AB7</color>
 
