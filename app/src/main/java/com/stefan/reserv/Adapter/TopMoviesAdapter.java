@@ -24,6 +24,7 @@ public class TopMoviesAdapter extends RecyclerView.Adapter<TopMoviesAdapter.MyVi
     Context context;
     ArrayList<Movie> movieList;
     OnPopularMovieClickListener onPopularMovieClickListener;
+
     public TopMoviesAdapter(Context context, ArrayList<Movie> movieList, OnPopularMovieClickListener onPopularMovieClickListener) {
         this.context = context;
         this.movieList = movieList;
@@ -57,6 +58,7 @@ public class TopMoviesAdapter extends RecyclerView.Adapter<TopMoviesAdapter.MyVi
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView cinema_photo_imv;
         OnPopularMovieClickListener onPopularMovieClickListener;
+
         public MyViewHolder(@NonNull View itemView, OnPopularMovieClickListener onPopularMovieClickListener) {
             super(itemView);
             cinema_photo_imv = itemView.findViewById(R.id.popular_movie);
@@ -69,7 +71,8 @@ public class TopMoviesAdapter extends RecyclerView.Adapter<TopMoviesAdapter.MyVi
             onPopularMovieClickListener.OnPopularMovieClick(getAdapterPosition());
         }
     }
-    public interface OnPopularMovieClickListener{
+
+    public interface OnPopularMovieClickListener {
         void OnPopularMovieClick(int position);
     }
 }

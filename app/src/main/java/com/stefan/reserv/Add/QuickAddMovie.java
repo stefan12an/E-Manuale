@@ -1,12 +1,16 @@
 package com.stefan.reserv.Add;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,9 +19,14 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.stefan.reserv.Adapter.GenreAdapter;
 import com.stefan.reserv.Database.MyDatabaseHelper;
 import com.stefan.reserv.MainActivity;
+import com.stefan.reserv.Model.Movie;
+import com.stefan.reserv.MovieList;
 import com.stefan.reserv.R;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -25,51 +34,65 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
-public class QuickAddMovie extends AppCompatActivity {
+public class QuickAddMovie extends AppCompatActivity implements GenreAdapter.OnGenreClickListener {
     private EditText movie_name;
     private Button save_button, del_button;
     private ImageView movie_poster;
     public Uri postImageUri;
     private byte[] photo;
+    private MyDatabaseHelper myDB;
+    private ArrayList<String> genreList, selectedGenres;
+    private RecyclerView genre_recyclerView;
+    private GenreAdapter genre_adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_add_movie);
+        genreList = new ArrayList<>();
+        selectedGenres = new ArrayList<>();
         movie_poster = findViewById(R.id.movie_photo);
         movie_name = findViewById(R.id.movie_title);
         save_button = findViewById(R.id.saveMovieToDB);
         del_button = findViewById(R.id.delete_movies_data);
-
+        myDB = new MyDatabaseHelper(this);
+        genre_adapter = new GenreAdapter(this, genreList, this);
+        genre_recyclerView = findViewById(R.id.genre_recyclerView);
+        genre_recyclerView.setAdapter(genre_adapter);
+        displayGenres();
         del_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddMovie.this);
                 myDB.deleteCinemaData();
-                Handler handler=new Handler();
+                Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         startActivity(new Intent(QuickAddMovie.this, MainActivity.class));
                         finish();
                     }
-                },500);
+                }, 500);
             }
         });
-
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddMovie.this);
                 myDB.insertMovieData(movie_name.getText().toString().trim(), photo);
-                Handler handler=new Handler();
+                myDB.insertMovieGenreData(movie_name.getText().toString().trim(), selectedGenres);
+                Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         finish();
                     }
-                },800);
+                }, 800);
             }
         });
         movie_poster.setOnClickListener(new View.OnClickListener() {
@@ -83,13 +106,31 @@ public class QuickAddMovie extends AppCompatActivity {
     private void selectImage() {
         Intent intent = CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)
-                .setMaxCropResultSize(1080,1350)
-                .setMinCropResultSize(320,566)
-                .setMinCropWindowSize(320,566)
-            .getIntent(QuickAddMovie.this);
+                .setMinCropResultSize(320, 566)
+                .setMinCropWindowSize(320, 566)
+                .getIntent(QuickAddMovie.this);
         startActivityForResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor = QuickAddMovie.this.getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return image;
+    }
+
+    public void displayGenres() {
+        Cursor cursor = myDB.readAllGenreData();
+        if (cursor.getCount() == 0) {
+            Toast.makeText(this, "No genres.", Toast.LENGTH_SHORT).show();
+        } else {
+            while (cursor.moveToNext()) {
+                genreList.add(cursor.getString(1));
+            }
+            genre_adapter.notifyDataSetChanged();
+        }
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -113,11 +154,12 @@ public class QuickAddMovie extends AppCompatActivity {
             }
         }
     }
-    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
-        ParcelFileDescriptor parcelFileDescriptor = QuickAddMovie.this.getContentResolver().openFileDescriptor(uri, "r");
-        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-        parcelFileDescriptor.close();
-        return image;
+
+    @Override
+    public void OnGenreClick(int position) {
+        if(!selectedGenres.contains(genreList.get(position))) {
+            selectedGenres.add(genreList.get(position));
+        }
+        Log.e(TAG, "OnPopularGenreClick: " + selectedGenres);
     }
 }

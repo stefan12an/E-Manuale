@@ -1,6 +1,7 @@
 package com.stefan.reserv.Adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.stefan.reserv.Model.Cinema;
@@ -18,11 +21,18 @@ import com.stefan.reserv.R;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.MyViewHolder> {
 
     Context context;
     ArrayList<String> genreList;
+    OnGenreClickListener onGenreClickListener;
+    public GenreAdapter(Context context, ArrayList<String> genreList, OnGenreClickListener onGenreClickListener) {
+        this.context = context;
+        this.genreList = genreList;
+        this.onGenreClickListener = onGenreClickListener;
+    }
 
     public GenreAdapter(Context context, ArrayList<String> genreList) {
         this.context = context;
@@ -34,7 +44,7 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.MyViewHolder
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.each_genre, parent, false);
-        return new MyViewHolder(view);
+        return new MyViewHolder(view, onGenreClickListener);
     }
 
     @Override
@@ -47,12 +57,23 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.MyViewHolder
         return genreList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView genre;
-
-        public MyViewHolder(@NonNull View itemView) {
+        OnGenreClickListener onGenreClickListener;
+        public MyViewHolder(@NonNull View itemView, OnGenreClickListener onGenreClickListener) {
             super(itemView);
             genre = itemView.findViewById(R.id.genre_tv);
+            this.onGenreClickListener = onGenreClickListener;
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            onGenreClickListener.OnGenreClick(getAdapterPosition());
+        }
+    }
+
+    public interface OnGenreClickListener {
+        void OnGenreClick(int position);
     }
 }

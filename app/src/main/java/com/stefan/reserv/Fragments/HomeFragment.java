@@ -1,19 +1,24 @@
 package com.stefan.reserv.Fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,13 +30,15 @@ import com.stefan.reserv.Model.Cinema;
 import com.stefan.reserv.Model.Movie;
 import com.stefan.reserv.Model.User;
 import com.stefan.reserv.MovieList;
+import com.stefan.reserv.MovieView;
 import com.stefan.reserv.R;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 
-public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopularMovieClickListener {
+public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopularMovieClickListener, GenreAdapter.OnGenreClickListener {
     private TextView see_more_btn;
+    private ImageView carousel_iv;
     private RecyclerView movie_recyclerView, genre_recyclerView;
     private MyDatabaseHelper myDB;
     private TopMoviesAdapter movie_adapter;
@@ -40,6 +47,7 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
     private ArrayList<String> genreList;
     private Movie movie = null;
     private User current_user;
+    private String genre = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,6 +56,7 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
         genreList = new ArrayList<>();
         myDB = new MyDatabaseHelper(getContext());
         see_more_btn = view.findViewById(R.id.see_more_btn);
+        carousel_iv = view.findViewById(R.id.carousel_iv);
         movie_adapter = new TopMoviesAdapter(getContext(), movieList, this);
         movie_recyclerView = view.findViewById(R.id.popular_movies);
         movie_recyclerView.setAdapter(movie_adapter);
@@ -56,10 +65,11 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
         if (bundle != null) {
             current_user = bundle.getParcelable("current_user");
         }
-        genre_adapter = new GenreAdapter(getContext(), genreList);
+        genre_adapter = new GenreAdapter(getContext(), genreList, this);
         genre_recyclerView = view.findViewById(R.id.genre_recyclerView);
         genre_recyclerView.setAdapter(genre_adapter);
-
+        AnimationDrawable animationDrawable = (AnimationDrawable) carousel_iv.getDrawable();
+        animationDrawable.start();
         see_more_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,10 +81,10 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
         return view;
     }
 
-    void displayTopMovieData() {
-        Cursor cursor = myDB.readAllMovieData();
+    public void displayTopMovieData() {
+        Cursor cursor = myDB.readAllMovieData(genre);
         if (cursor.getCount() == 0) {
-            Toast.makeText(getContext(), "No data.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No popular movies.", Toast.LENGTH_SHORT).show();
         } else {
             while (cursor.moveToNext()) {
                 movie = new Movie(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3));
@@ -84,10 +94,10 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
         }
     }
 
-    void displayGenres() {
+    public void displayGenres() {
         Cursor cursor = myDB.readAllGenreData();
         if (cursor.getCount() == 0) {
-            Toast.makeText(getContext(), "No data.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No genres.", Toast.LENGTH_SHORT).show();
         } else {
             while (cursor.moveToNext()) {
                 genreList.add(cursor.getString(1));
@@ -112,14 +122,21 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
 
     @Override
     public void OnPopularMovieClick(int position) {
-        MovieFragment movieFragment = new MovieFragment();
-        Movie selected_movie = movieList.get(position);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("movie", selected_movie);
-        movieFragment.setArguments(bundle);
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.flFragment, movieFragment)
-                .commit();
+        Intent i = new Intent(getContext(), MovieView.class);
+        i.putExtra("movie", movieList.get(position));
+        if (current_user != null) {
+            i.putExtra("current_user", current_user);
+        }
+        startActivity(i);
+
+    }
+
+
+    @Override
+    public void OnGenreClick(int position) {
+        Intent i = new Intent(getContext(), MovieList.class);
+        i.putExtra("current_user", current_user);
+        i.putExtra("filter_genre", genreList.get(position));
+        startActivity(i);
     }
 }

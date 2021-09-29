@@ -1,16 +1,21 @@
 package com.stefan.reserv;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -28,8 +33,7 @@ public class MovieList extends AppCompatActivity implements MovieListAdapter.OnM
     private MyDatabaseHelper myDB;
     private Movie movie;
     private User current_user;
-    private Integer Movie_Fragment = 1;
-
+    private String filter_genre;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,13 +46,17 @@ public class MovieList extends AppCompatActivity implements MovieListAdapter.OnM
         if (getIntent().hasExtra("current_user")) {
             Bundle bundle = getIntent().getExtras();
             current_user = bundle.getParcelable("current_user");
-            Toast.makeText(this, "Are user", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(this, "Nu are user", Toast.LENGTH_SHORT).show();
+            if(getIntent().hasExtra("filter_genre")){
+                filter_genre = bundle.getString("filter_genre");
+            }
         }
+        Log.e(TAG, "onCreate: Filtered genre = " + filter_genre + ", " + current_user.getRole());
         myDB = new MyDatabaseHelper(this);
         movieRv = findViewById(R.id.movie_list_recyclerView);
         movieListAdapter = new MovieListAdapter(this, movieList, this);
+        if(current_user.getRole().equals("admin")) {
+            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(movieRv);
+        }
         movieRv.setAdapter(movieListAdapter);
         movieRv.setLayoutManager(new LinearLayoutManager(this));
         movieRv.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -56,7 +64,7 @@ public class MovieList extends AppCompatActivity implements MovieListAdapter.OnM
     }
 
     void displayAllMovies() {
-        Cursor cursor = myDB.readAllMovieData();
+        Cursor cursor = myDB.readAllMovieData(filter_genre);
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "No data.", Toast.LENGTH_SHORT).show();
         } else {
@@ -70,22 +78,35 @@ public class MovieList extends AppCompatActivity implements MovieListAdapter.OnM
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void OnMovieClick(int position) {
-        Intent i = new Intent(this, MainActivity.class);
-        i.putExtra("frgToLoad", Movie_Fragment);
-        i.putExtra("movie",movieList.get(position));
+        Intent i = new Intent(this, MovieView.class);
+        i.putExtra("movie", movieList.get(position));
         if (current_user != null) {
             i.putExtra("current_user", current_user);
         }
         startActivity(i);
     }
+
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    myDB.deleteSpecificMovie(movieList.get(viewHolder.getAdapterPosition()));
+                    movieList.remove(viewHolder.getAdapterPosition());
+                    movieListAdapter.notifyDataSetChanged();
+                }
+            };
 }

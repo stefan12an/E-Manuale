@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.stefan.reserv.Database.MyDatabaseHelper;
 import com.stefan.reserv.Model.User;
+import com.stefan.reserv.Utils.PreferenceUtils;
 
 public class LoginActivity extends AppCompatActivity {
     TextView goto_register;
@@ -24,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     Button login_send;
     MyDatabaseHelper myDB;
     User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +34,9 @@ public class LoginActivity extends AppCompatActivity {
         login_email = findViewById(R.id.login_email);
         login_password = findViewById(R.id.login_password);
         login_send = findViewById(R.id.login_button);
+        if (PreferenceUtils.getEmail(this) != null && !PreferenceUtils.getEmail(this).equals("")) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
         myDB = new MyDatabaseHelper(LoginActivity.this);
         login_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,6 +48,10 @@ public class LoginActivity extends AppCompatActivity {
                     if (cursor.getCount() == 1) {
                         while (cursor.moveToNext()) {
                             user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+                            PreferenceUtils.saveId(user.getId(), LoginActivity.this);
+                            PreferenceUtils.saveEmail(user.getEmail(), LoginActivity.this);
+                            PreferenceUtils.savePassword(user.getPassword(), LoginActivity.this);
+                            PreferenceUtils.saveRole(user.getRole(), LoginActivity.this);
                         }
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         if (user != null) {
