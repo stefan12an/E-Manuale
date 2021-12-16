@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="176dp"
+    android:layout_height="180dp"
     android:background="@color/warning_500"
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.MaterialComponents.Dark">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/nav_header_profile_pic"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/reserv_logo_round"
-        android:elevation="4dp"/>
+        android:elevation="4dp"
+        android:src="@drawable/reserv_logo_round" />
 
     <TextView
         android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:text="Coding and Flow"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:text="Coding and Flow" />
 
     <TextView
         android:id="@+id/header_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="cacat@gmail.com" />
+        android:textColor="@color/white"
+        android:text="reserv@gmail.com" />
 
 </LinearLayout>

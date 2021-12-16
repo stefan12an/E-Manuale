@@ -20,13 +20,12 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.stefan.reserv.Adapter.GenreAdapter;
 import com.stefan.reserv.Database.MyDatabaseHelper;
 import com.stefan.reserv.MainActivity;
-import com.stefan.reserv.Model.Movie;
-import com.stefan.reserv.MovieList;
 import com.stefan.reserv.R;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -34,10 +33,8 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 
 public class QuickAddMovie extends AppCompatActivity implements GenreAdapter.OnGenreClickListener {
     private EditText movie_name;
@@ -49,11 +46,15 @@ public class QuickAddMovie extends AppCompatActivity implements GenreAdapter.OnG
     private ArrayList<String> genreList, selectedGenres;
     private RecyclerView genre_recyclerView;
     private GenreAdapter genre_adapter;
+    private int click_color;
+    private int unclick_color;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_add_movie);
+        click_color = ContextCompat.getColor(this, R.color.grey_500);
+        unclick_color = ContextCompat.getColor(this, R.color.warning_700);
         genreList = new ArrayList<>();
         selectedGenres = new ArrayList<>();
         movie_poster = findViewById(R.id.movie_photo);
@@ -156,9 +157,13 @@ public class QuickAddMovie extends AppCompatActivity implements GenreAdapter.OnG
     }
 
     @Override
-    public void OnGenreClick(int position) {
-        if(!selectedGenres.contains(genreList.get(position))) {
+    public void OnGenreClick(int position, CardView genre_cv) {
+        if (!selectedGenres.contains(genreList.get(position))) {
             selectedGenres.add(genreList.get(position));
+            genre_cv.setCardBackgroundColor(click_color);
+        } else {
+            selectedGenres.remove(genreList.get(position));
+            genre_cv.setCardBackgroundColor(unclick_color);
         }
         Log.e(TAG, "OnPopularGenreClick: " + selectedGenres);
     }

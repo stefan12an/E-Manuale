@@ -1,5 +1,7 @@
 package com.stefan.reserv;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,10 +11,15 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
@@ -26,13 +33,19 @@ import com.stefan.reserv.Model.Movie;
 import com.stefan.reserv.Model.User;
 import com.stefan.reserv.Utils.PreferenceUtils;
 
+import java.io.ByteArrayInputStream;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private CardView logout_btn;
-    private TextView user_email;
+    private TextView user_email, user_name;
     private User current_user;
+    private ImageView profile_pic;
     private Movie selected_movie;
+    private byte[] pic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,27 +53,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.myToolBar);
         setSupportActionBar(toolbar);
+
         logout_btn = findViewById(R.id.logout_button);
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.NavigationView);
         navigationView.setNavigationItemSelectedListener(this);
         View headerView = navigationView.getHeaderView(0);
+        user_name = headerView.findViewById(R.id.user_name);
         user_email = headerView.findViewById(R.id.header_email);
+        profile_pic = headerView.findViewById(R.id.nav_header_profile_pic);
         if (getIntent().hasExtra("login_current_user")) {
             Bundle bundle = getIntent().getExtras();
             current_user = bundle.getParcelable("login_current_user");
-            user_email.setText(current_user.getEmail());
         } else if (getIntent().hasExtra("current_user")) {
             Bundle bundle = getIntent().getExtras();
             current_user = bundle.getParcelable("current_user");
-            user_email.setText(current_user.getEmail());
         } else {
             String id = PreferenceUtils.getId(this);
+            String username = PreferenceUtils.getUsername(this);
             String email = PreferenceUtils.getEmail(this);
             String pass = PreferenceUtils.getPassword(this);
             String role = PreferenceUtils.getRole(this);
-            current_user = new User(id, email, pass, role);
-            user_email.setText(current_user.getEmail());
+            if (PreferenceUtils.getPic(this) != null) {
+                pic = PreferenceUtils.getPic(this);
+            }
+            if (pic == null) {
+                current_user = new User(id, username, email, pass, role);
+            } else {
+                current_user = new User(id, username, email, pass, role, pic);
+            }
+        }
+        user_email.setText(current_user.getEmail());
+        user_name.setText(current_user.getUsername());
+        if (current_user.getProfile_pic() != null) {
+            ByteArrayInputStream imageStream = new ByteArrayInputStream(current_user.getProfile_pic());
+            Bitmap theImage = BitmapFactory.decodeStream(imageStream);
+            profile_pic.setImageBitmap(theImage);
         }
         if (getIntent().hasExtra("movie")) {
             Bundle bundle = getIntent().getExtras();
@@ -96,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MenuItem addMovie = menu.findItem(R.id.nav_add_movie);
         MenuItem addCinema = menu.findItem(R.id.nav_add_cinema);
         MenuItem addGenre = menu.findItem(R.id.nav_add_genre);
-        if(current_user!=null) {
+        if (current_user != null) {
             if (!current_user.getRole().equals("admin")) {
                 addMovie.setVisible(false);
                 addCinema.setVisible(false);

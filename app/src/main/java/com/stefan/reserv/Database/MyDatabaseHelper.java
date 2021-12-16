@@ -21,11 +21,12 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
-    String email = "vms1238@gmail.com";
-    String password = "1904stef";
+    private static final String username = "admin";
+    private static final String email = "vms1238@gmail.com";
+    private static final String password = "1904stef";
     private final Context context;
     private static final String DATABASE_NAME = "reserv.db";
-    private static final int DATABASE_VERSION = 18;
+    private static final int DATABASE_VERSION = 23;
 
     //TABLE NAMES
     private static final String CINEMA_TABLE_NAME = "CINEMA";
@@ -47,9 +48,11 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     //COLUMNS USER TABLE
     private static final String USER_COLUMN_ID = "id";
+    private static final String USER_COLUMN_USERNAME = "username";
     private static final String USER_COLUMN_EMAIL = "email";
     private static final String USER_COLUMN_PASSWORD = "password";
     private static final String USER_COLUMN_ROLE = "role";
+    private static final String USER_COLUMN_PICTURE = "profile_pic";
 
     //COLUMNS MOVIE TABLE
     private static final String MOVIE_COLUMN_ID = "id";
@@ -115,9 +118,11 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
         String query_user = "CREATE TABLE " + USER_TABLE_NAME + " ("
                 + USER_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + USER_COLUMN_USERNAME + " TEXT, "
                 + USER_COLUMN_EMAIL + " TEXT, "
                 + USER_COLUMN_PASSWORD + " TEXT, "
-                + USER_COLUMN_ROLE + " TEXT);";
+                + USER_COLUMN_ROLE + " TEXT, "
+                + USER_COLUMN_PICTURE + " BLOB);";
 
         String query_genre = "CREATE TABLE " + GENRE_TABLE_NAME + " ("
                 + GENRE_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -182,9 +187,10 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         String user_query = "INSERT INTO " + USER_TABLE_NAME + " (" +
+                USER_COLUMN_USERNAME + ", " +
                 USER_COLUMN_EMAIL + ", " +
                 USER_COLUMN_PASSWORD + ", " +
-                USER_COLUMN_ROLE + ") VALUES ('" + email + "', '" + password + "', " + "'admin');";
+                USER_COLUMN_ROLE + ") VALUES ('" + username + "', '" + email + "', '" + password + "', " + "'admin');";
         db.execSQL("DROP TABLE IF EXISTS " + CINEMA_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + MOVIE_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE_NAME);
@@ -199,13 +205,14 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(user_query);
     }
 
-    public void insertUserData(String email, String password) {
+    public void insertUserData(String username, String email, String password, byte[] profile_pic) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-
+        cv.put(USER_COLUMN_USERNAME, username);
         cv.put(USER_COLUMN_EMAIL, email);
         cv.put(USER_COLUMN_PASSWORD, password);
         cv.put(USER_COLUMN_ROLE, "user");
+        cv.put(USER_COLUMN_PICTURE, profile_pic);
         long result = db.insert(USER_TABLE_NAME, null, cv);
         if (result == -1) {
             Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();

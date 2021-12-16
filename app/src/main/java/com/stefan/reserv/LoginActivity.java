@@ -15,13 +15,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.stefan.reserv.Database.MyDatabaseHelper;
 import com.stefan.reserv.Model.User;
 import com.stefan.reserv.Utils.PreferenceUtils;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
     TextView goto_register;
-    EditText login_email, login_password;
+    TextInputEditText login_email, login_password;
     Button login_send;
     MyDatabaseHelper myDB;
     User user;
@@ -41,17 +44,25 @@ public class LoginActivity extends AppCompatActivity {
         login_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = login_email.getText().toString().trim();
-                String pass = login_password.getText().toString().trim();
+                String email = Objects.requireNonNull(login_email.getText()).toString().trim();
+                String pass = Objects.requireNonNull(login_password.getText()).toString().trim();
                 Cursor cursor = myDB.checkUserCredentials(email, pass);
                 if (cursor != null) {
                     if (cursor.getCount() == 1) {
                         while (cursor.moveToNext()) {
-                            user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+                            if (cursor.getBlob(5) == null) {
+                                user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+                            } else {
+                                user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getBlob(5));
+                            }
                             PreferenceUtils.saveId(user.getId(), LoginActivity.this);
+                            PreferenceUtils.saveUsername(user.getUsername(),LoginActivity.this);
                             PreferenceUtils.saveEmail(user.getEmail(), LoginActivity.this);
                             PreferenceUtils.savePassword(user.getPassword(), LoginActivity.this);
                             PreferenceUtils.saveRole(user.getRole(), LoginActivity.this);
+                            if (user.getProfile_pic() != null) {
+                                PreferenceUtils.savePic(user.getProfile_pic(), LoginActivity.this);
+                            }
                         }
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         if (user != null) {

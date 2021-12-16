@@ -5,15 +5,35 @@ import android.os.Parcelable;
 
 public class User implements Parcelable {
     private String id;
+    private String username;
     private String email;
     private String password;
     private String role;
+    private byte[] profile_pic;
 
-    public User(String id, String username, String password, String role) {
+    public User(String id, String username, String email, String password, String role, byte[] profile_pic) {
         this.id = id;
-        this.email = username;
+        this.username = username;
+        this.email = email;
         this.password = password;
         this.role = role;
+        this.profile_pic = profile_pic;
+    }
+
+    public User(String id, String username, String email, String password, String role) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public byte[] getProfile_pic() {
+        return profile_pic;
     }
 
     public String getId() {
@@ -40,9 +60,11 @@ public class User implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
+        dest.writeString(username);
         dest.writeString(email);
         dest.writeString(password);
         dest.writeString(role);
+        dest.writeByteArray(profile_pic);
     }
     public static final Parcelable.Creator<User> CREATOR
             = new Parcelable.Creator<User>() {
@@ -57,8 +79,10 @@ public class User implements Parcelable {
 
     private User(Parcel in) {
         id = in.readString();
+        username = in.readString();
         email = in.readString();
         password = in.readString();
         role = in.readString();
+        profile_pic = in.createByteArray();
     }
 }

@@ -57,9 +57,12 @@ public class MovieList extends AppCompatActivity implements MovieListAdapter.OnM
         if(current_user.getRole().equals("admin")) {
             new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(movieRv);
         }
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,
+                LinearLayoutManager.VERTICAL);
+        dividerItemDecoration.setDrawable(this.getResources().getDrawable(R.drawable.devider));
         movieRv.setAdapter(movieListAdapter);
         movieRv.setLayoutManager(new LinearLayoutManager(this));
-        movieRv.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        movieRv.addItemDecoration(dividerItemDecoration);
         displayAllMovies();
     }
 
@@ -89,6 +92,7 @@ public class MovieList extends AppCompatActivity implements MovieListAdapter.OnM
     public void OnMovieClick(int position) {
         Intent i = new Intent(this, MovieView.class);
         i.putExtra("movie", movieList.get(position));
+        Log.e(TAG, "OnMovieClick " + movieList.get(position).getTitle());
         if (current_user != null) {
             i.putExtra("current_user", current_user);
         }
@@ -101,7 +105,6 @@ public class MovieList extends AppCompatActivity implements MovieListAdapter.OnM
                 public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                     return false;
                 }
-
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                     myDB.deleteSpecificMovie(movieList.get(viewHolder.getAdapterPosition()));

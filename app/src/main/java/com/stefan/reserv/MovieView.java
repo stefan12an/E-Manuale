@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
@@ -26,6 +27,7 @@ import com.stefan.reserv.Model.User;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MovieView extends AppCompatActivity implements GenreAdapter.OnGenreClickListener {
     private Movie selected_movie;
@@ -43,6 +45,7 @@ public class MovieView extends AppCompatActivity implements GenreAdapter.OnGenre
         Toolbar toolbar = findViewById(R.id.myToolBar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
         genreList = new ArrayList<>();
         movie_title = findViewById(R.id.movie_preview_title);
@@ -70,10 +73,9 @@ public class MovieView extends AppCompatActivity implements GenreAdapter.OnGenre
     }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -91,10 +93,11 @@ public class MovieView extends AppCompatActivity implements GenreAdapter.OnGenre
     }
 
     @Override
-    public void OnGenreClick(int position) {
+    public void OnGenreClick(int position, CardView genre_cv) {
         Intent i = new Intent(this, MovieList.class);
         i.putExtra("current_user", current_user);
         i.putExtra("filter_genre", genreList.get(position));
         startActivity(i);
+        finish();
     }
 }

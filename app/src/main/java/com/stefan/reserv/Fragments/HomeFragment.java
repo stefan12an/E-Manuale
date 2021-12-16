@@ -1,20 +1,15 @@
 package com.stefan.reserv.Fragments;
 
-import static android.content.ContentValues.TAG;
-
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,19 +17,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.stefan.reserv.Adapter.CinemaAdapter;
 import com.stefan.reserv.Adapter.GenreAdapter;
 import com.stefan.reserv.Adapter.TopMoviesAdapter;
 import com.stefan.reserv.Database.MyDatabaseHelper;
-import com.stefan.reserv.Model.Cinema;
 import com.stefan.reserv.Model.Movie;
 import com.stefan.reserv.Model.User;
 import com.stefan.reserv.MovieList;
 import com.stefan.reserv.MovieView;
 import com.stefan.reserv.R;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopularMovieClickListener, GenreAdapter.OnGenreClickListener {
     private TextView see_more_btn;
@@ -133,7 +126,7 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
 
 
     @Override
-    public void OnGenreClick(int position) {
+    public void OnGenreClick(int position, CardView genre_cv) {
         Intent i = new Intent(getContext(), MovieList.class);
         i.putExtra("current_user", current_user);
         i.putExtra("filter_genre", genreList.get(position));
