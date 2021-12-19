@@ -22,15 +22,14 @@ import android.widget.Toast;
 
 import com.stefan.reserv.Adapter.GenreAdapter;
 import com.stefan.reserv.Database.MyDatabaseHelper;
-import com.stefan.reserv.Model.Movie;
+import com.stefan.reserv.Model.Book;
 import com.stefan.reserv.Model.User;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class MovieView extends AppCompatActivity implements GenreAdapter.OnGenreClickListener {
-    private Movie selected_movie;
+public class BookView extends AppCompatActivity implements GenreAdapter.OnGenreClickListener {
+    private Book selected_book;
     private TextView movie_title,movie_date,movie_description;
     private ImageView movie_poster;
     private User current_user;
@@ -41,7 +40,7 @@ public class MovieView extends AppCompatActivity implements GenreAdapter.OnGenre
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie_view);
+        setContentView(R.layout.activity_book_view);
         Toolbar toolbar = findViewById(R.id.myToolBar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -61,11 +60,11 @@ public class MovieView extends AppCompatActivity implements GenreAdapter.OnGenre
             if(getIntent().hasExtra("current_user")) {
                 current_user = bundle.getParcelable("current_user");
             }
-            selected_movie = bundle.getParcelable("movie");
-            Log.e(TAG, "onCreate: " + current_user.getRole() + ", " + selected_movie.getTitle());
-            movie_title.setText(selected_movie.getTitle());
-            movie_date.setText(selected_movie.getRelease_date());
-            ByteArrayInputStream imageStream = new ByteArrayInputStream(selected_movie.getMovie_poster());
+            selected_book = bundle.getParcelable("movie");
+            Log.e(TAG, "onCreate: " + current_user.getRole() + ", " + selected_book.getTitle());
+            movie_title.setText(selected_book.getTitle());
+            movie_date.setText(selected_book.getRelease_date());
+            ByteArrayInputStream imageStream = new ByteArrayInputStream(selected_book.getMovie_poster());
             Bitmap theImage = BitmapFactory.decodeStream(imageStream);
             movie_poster.setImageBitmap(theImage);
         }
@@ -81,7 +80,7 @@ public class MovieView extends AppCompatActivity implements GenreAdapter.OnGenre
     }
 
     public void displayMovieSpecificGenres() {
-        Cursor cursor = myDB.readAllMovieSpecificGenreData(selected_movie);
+        Cursor cursor = myDB.readAllBookSpecificGenreData(selected_book);
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "No genres.", Toast.LENGTH_SHORT).show();
         } else {
@@ -94,7 +93,7 @@ public class MovieView extends AppCompatActivity implements GenreAdapter.OnGenre
 
     @Override
     public void OnGenreClick(int position, CardView genre_cv) {
-        Intent i = new Intent(this, MovieList.class);
+        Intent i = new Intent(this, BookList.class);
         i.putExtra("current_user", current_user);
         i.putExtra("filter_genre", genreList.get(position));
         startActivity(i);

@@ -11,41 +11,41 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.stefan.reserv.Adapter.CinemaAdapter;
+import com.stefan.reserv.Adapter.GradeAdapter;
 import com.stefan.reserv.Database.MyDatabaseHelper;
-import com.stefan.reserv.Model.Cinema;
+import com.stefan.reserv.Model.Grade;
 import com.stefan.reserv.R;
 
 import java.util.ArrayList;
 
-public class CinemaFragment extends Fragment {
+public class GradeFragment extends Fragment {
     RecyclerView recyclerView;
     MyDatabaseHelper myDB;
-    CinemaAdapter adapter;
-    ArrayList<Cinema> cinemaList;
-    Cinema cinema = null;
+    GradeAdapter adapter;
+    ArrayList<Grade> gradeList;
+    Grade grade = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_cinema, container, false);
+        View view = inflater.inflate(R.layout.fragment_grade, container, false);
 
         recyclerView = view.findViewById(R.id.cinema_RecyclerView);
         myDB = new MyDatabaseHelper(getContext());
-        cinemaList = new ArrayList<>();
-        adapter = new CinemaAdapter(getContext(), cinemaList);
+        gradeList = new ArrayList<>();
+        adapter = new GradeAdapter(getContext(), gradeList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
     }
 
     void displayData() {
-        Cursor cursor = myDB.readAllCinemaData();
+        Cursor cursor = myDB.readAllGradeData();
         if (cursor.getCount() == 0) {
             Toast.makeText(getContext(), "No data.", Toast.LENGTH_SHORT).show();
         } else {
             while (cursor.moveToNext()) {
-                cinema = new Cinema(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3));
-                cinemaList.add(cinema);
+                grade = new Grade(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3));
+                gradeList.add(grade);
             }
             adapter.notifyDataSetChanged();
         }
@@ -54,7 +54,7 @@ public class CinemaFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        cinemaList.clear();
+        gradeList.clear();
     }
 
     @Override

@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,26 +18,26 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.stefan.reserv.Adapter.MovieListAdapter;
+import com.stefan.reserv.Adapter.BookListAdapter;
 import com.stefan.reserv.Database.MyDatabaseHelper;
-import com.stefan.reserv.Model.Movie;
+import com.stefan.reserv.Model.Book;
 import com.stefan.reserv.Model.User;
 
 import java.util.ArrayList;
 
-public class MovieList extends AppCompatActivity implements MovieListAdapter.OnMovieClickListener {
-    private ArrayList<Movie> movieList;
-    private MovieListAdapter movieListAdapter;
+public class BookList extends AppCompatActivity implements BookListAdapter.OnMovieClickListener {
+    private ArrayList<Book> bookList;
+    private BookListAdapter bookListAdapter;
     private RecyclerView movieRv;
     private MyDatabaseHelper myDB;
-    private Movie movie;
+    private Book book;
     private User current_user;
     private String filter_genre;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie_list);
-        movieList = new ArrayList<>();
+        setContentView(R.layout.activity_book_list);
+        bookList = new ArrayList<>();
         Toolbar toolbar = findViewById(R.id.myToolBar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -53,29 +52,29 @@ public class MovieList extends AppCompatActivity implements MovieListAdapter.OnM
         Log.e(TAG, "onCreate: Filtered genre = " + filter_genre + ", " + current_user.getRole());
         myDB = new MyDatabaseHelper(this);
         movieRv = findViewById(R.id.movie_list_recyclerView);
-        movieListAdapter = new MovieListAdapter(this, movieList, this);
+        bookListAdapter = new BookListAdapter(this, bookList, this);
         if(current_user.getRole().equals("admin")) {
             new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(movieRv);
         }
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,
                 LinearLayoutManager.VERTICAL);
         dividerItemDecoration.setDrawable(this.getResources().getDrawable(R.drawable.devider));
-        movieRv.setAdapter(movieListAdapter);
+        movieRv.setAdapter(bookListAdapter);
         movieRv.setLayoutManager(new LinearLayoutManager(this));
         movieRv.addItemDecoration(dividerItemDecoration);
         displayAllMovies();
     }
 
     void displayAllMovies() {
-        Cursor cursor = myDB.readAllMovieData(filter_genre);
+        Cursor cursor = myDB.readAllBookData(filter_genre);
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "No data.", Toast.LENGTH_SHORT).show();
         } else {
             while (cursor.moveToNext()) {
-                movie = new Movie(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3));
-                movieList.add(movie);
+                book = new Book(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3));
+                bookList.add(book);
             }
-            movieListAdapter.notifyDataSetChanged();
+            bookListAdapter.notifyDataSetChanged();
         }
     }
 
@@ -90,9 +89,9 @@ public class MovieList extends AppCompatActivity implements MovieListAdapter.OnM
 
     @Override
     public void OnMovieClick(int position) {
-        Intent i = new Intent(this, MovieView.class);
-        i.putExtra("movie", movieList.get(position));
-        Log.e(TAG, "OnMovieClick " + movieList.get(position).getTitle());
+        Intent i = new Intent(this, BookView.class);
+        i.putExtra("movie", bookList.get(position));
+        Log.e(TAG, "OnMovieClick " + bookList.get(position).getTitle());
         if (current_user != null) {
             i.putExtra("current_user", current_user);
         }
@@ -107,9 +106,9 @@ public class MovieList extends AppCompatActivity implements MovieListAdapter.OnM
                 }
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    myDB.deleteSpecificMovie(movieList.get(viewHolder.getAdapterPosition()));
-                    movieList.remove(viewHolder.getAdapterPosition());
-                    movieListAdapter.notifyDataSetChanged();
+                    myDB.deleteSpecificBook(bookList.get(viewHolder.getAdapterPosition()));
+                    bookList.remove(viewHolder.getAdapterPosition());
+                    bookListAdapter.notifyDataSetChanged();
                 }
             };
 }

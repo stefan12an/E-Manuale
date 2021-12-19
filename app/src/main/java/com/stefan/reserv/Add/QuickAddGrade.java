@@ -26,7 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.IOException;
 
-public class QuickAddCinema extends AppCompatActivity {
+public class QuickAddGrade extends AppCompatActivity {
     private EditText editText1, editText2;
     private Button save_button, del_button;
     private ImageView cinema_photo;
@@ -36,7 +36,7 @@ public class QuickAddCinema extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quick_add_cinema);
+        setContentView(R.layout.activity_quick_add_grade);
         cinema_photo = findViewById(R.id.cinema_photo);
         editText1 = findViewById(R.id.cinema_name);
         editText2 = findViewById(R.id.cinema_location);
@@ -46,13 +46,13 @@ public class QuickAddCinema extends AppCompatActivity {
         del_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddCinema.this);
-                myDB.deleteCinemaData();
+                MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddGrade.this);
+                myDB.deleteGradeData();
                 Handler handler=new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(new Intent(QuickAddCinema.this, MainActivity.class));
+                        startActivity(new Intent(QuickAddGrade.this, MainActivity.class));
                         finish();
                     }
                 },500);
@@ -62,9 +62,8 @@ public class QuickAddCinema extends AppCompatActivity {
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddCinema.this);
-                myDB.insertCinemaData(editText1.getText().toString().trim(),
-                        editText2.getText().toString().trim(),photo);
+                MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddGrade.this);
+                myDB.insertGradeData(editText1.getText().toString().trim());
                 Handler handler=new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -88,7 +87,7 @@ public class QuickAddCinema extends AppCompatActivity {
                 .setMaxCropResultSize(1080,1350)
                 .setMinCropResultSize(320,566)
                 .setMinCropWindowSize(320,566)
-            .getIntent(QuickAddCinema.this);
+            .getIntent(QuickAddGrade.this);
         startActivityForResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
@@ -111,12 +110,12 @@ public class QuickAddCinema extends AppCompatActivity {
                 photo = baos.toByteArray();
                 cinema_photo.setImageURI(postImageUri);
             } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Toast.makeText(QuickAddCinema.this, result.getError().getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(QuickAddGrade.this, result.getError().getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
     private Bitmap getBitmapFromUri(Uri uri) throws IOException {
-        ParcelFileDescriptor parcelFileDescriptor = QuickAddCinema.this.getContentResolver().openFileDescriptor(uri, "r");
+        ParcelFileDescriptor parcelFileDescriptor = QuickAddGrade.this.getContentResolver().openFileDescriptor(uri, "r");
         FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
         Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
         parcelFileDescriptor.close();

@@ -1,7 +1,5 @@
 package com.stefan.reserv;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,9 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,19 +19,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
-import com.stefan.reserv.Add.QuickAddCinema;
+import com.stefan.reserv.Add.QuickAddGrade;
 import com.stefan.reserv.Add.QuickAddGenre;
-import com.stefan.reserv.Add.QuickAddMovie;
-import com.stefan.reserv.Fragments.CinemaFragment;
+import com.stefan.reserv.Add.QuickAddBook;
+import com.stefan.reserv.Fragments.GradeFragment;
 import com.stefan.reserv.Fragments.HomeFragment;
 import com.stefan.reserv.Fragments.ProfileFragment;
-import com.stefan.reserv.Model.Movie;
+import com.stefan.reserv.Model.Book;
 import com.stefan.reserv.Model.User;
 import com.stefan.reserv.Utils.PreferenceUtils;
 
 import java.io.ByteArrayInputStream;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawer;
@@ -44,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView user_email, user_name;
     private User current_user;
     private ImageView profile_pic;
-    private Movie selected_movie;
+    private Book selected_book;
     private byte[] pic;
 
     @Override
@@ -92,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         if (getIntent().hasExtra("movie")) {
             Bundle bundle = getIntent().getExtras();
-            selected_movie = bundle.getParcelable("movie");
+            selected_book = bundle.getParcelable("movie");
         }
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -158,12 +152,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, homeFragment).commit();
                 break;
             case R.id.nav_cinema:
-                CinemaFragment cinemaFragment = new CinemaFragment();
-                cinemaFragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, cinemaFragment).commit();
+                GradeFragment gradeFragment = new GradeFragment();
+                gradeFragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, gradeFragment).commit();
                 break;
             case R.id.nav_movie:
-                Intent i = new Intent(this, MovieList.class);
+                Intent i = new Intent(this, BookList.class);
                 i.putExtra("current_user", current_user);
                 startActivity(i);
                 break;
@@ -173,10 +167,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, profileFragment).commit();
                 break;
             case R.id.nav_add_movie:
-                startActivity(new Intent(MainActivity.this, QuickAddMovie.class));
+                startActivity(new Intent(MainActivity.this, QuickAddBook.class));
                 break;
             case R.id.nav_add_cinema:
-                startActivity(new Intent(MainActivity.this, QuickAddCinema.class));
+                startActivity(new Intent(MainActivity.this, QuickAddGrade.class));
             case R.id.nav_add_genre:
                 startActivity(new Intent(MainActivity.this, QuickAddGenre.class));
         }

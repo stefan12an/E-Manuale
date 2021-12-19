@@ -18,39 +18,38 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.stefan.reserv.Adapter.GenreAdapter;
-import com.stefan.reserv.Adapter.TopMoviesAdapter;
+import com.stefan.reserv.Adapter.TopBooksAdapter;
 import com.stefan.reserv.Database.MyDatabaseHelper;
-import com.stefan.reserv.Model.Movie;
+import com.stefan.reserv.Model.Book;
 import com.stefan.reserv.Model.User;
-import com.stefan.reserv.MovieList;
-import com.stefan.reserv.MovieView;
+import com.stefan.reserv.BookList;
+import com.stefan.reserv.BookView;
 import com.stefan.reserv.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopularMovieClickListener, GenreAdapter.OnGenreClickListener {
+public class HomeFragment extends Fragment implements TopBooksAdapter.OnPopularMovieClickListener, GenreAdapter.OnGenreClickListener {
     private TextView see_more_btn;
     private ImageView carousel_iv;
     private RecyclerView movie_recyclerView, genre_recyclerView;
     private MyDatabaseHelper myDB;
-    private TopMoviesAdapter movie_adapter;
+    private TopBooksAdapter movie_adapter;
     private GenreAdapter genre_adapter;
-    private ArrayList<Movie> movieList;
+    private ArrayList<Book> bookList;
     private ArrayList<String> genreList;
-    private Movie movie = null;
+    private Book book = null;
     private User current_user;
     private String genre = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        movieList = new ArrayList<>();
+        bookList = new ArrayList<>();
         genreList = new ArrayList<>();
         myDB = new MyDatabaseHelper(getContext());
         see_more_btn = view.findViewById(R.id.see_more_btn);
         carousel_iv = view.findViewById(R.id.carousel_iv);
-        movie_adapter = new TopMoviesAdapter(getContext(), movieList, this);
+        movie_adapter = new TopBooksAdapter(getContext(), bookList, this);
         movie_recyclerView = view.findViewById(R.id.popular_movies);
         movie_recyclerView.setAdapter(movie_adapter);
         movie_recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
@@ -66,7 +65,7 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
         see_more_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), MovieList.class);
+                Intent i = new Intent(getContext(), BookList.class);
                 i.putExtra("current_user", current_user);
                 startActivity(i);
             }
@@ -75,13 +74,13 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
     }
 
     public void displayTopMovieData() {
-        Cursor cursor = myDB.readAllMovieData(genre);
+        Cursor cursor = myDB.readAllBookData(genre);
         if (cursor.getCount() == 0) {
             Toast.makeText(getContext(), "No popular movies.", Toast.LENGTH_SHORT).show();
         } else {
             while (cursor.moveToNext()) {
-                movie = new Movie(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3));
-                movieList.add(movie);
+                book = new Book(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3));
+                bookList.add(book);
             }
             movie_adapter.notifyDataSetChanged();
         }
@@ -102,7 +101,7 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
     @Override
     public void onPause() {
         super.onPause();
-        movieList.clear();
+        bookList.clear();
         genreList.clear();
     }
 
@@ -115,8 +114,8 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
 
     @Override
     public void OnPopularMovieClick(int position) {
-        Intent i = new Intent(getContext(), MovieView.class);
-        i.putExtra("movie", movieList.get(position));
+        Intent i = new Intent(getContext(), BookView.class);
+        i.putExtra("movie", bookList.get(position));
         if (current_user != null) {
             i.putExtra("current_user", current_user);
         }
@@ -127,7 +126,7 @@ public class HomeFragment extends Fragment implements TopMoviesAdapter.OnPopular
 
     @Override
     public void OnGenreClick(int position, CardView genre_cv) {
-        Intent i = new Intent(getContext(), MovieList.class);
+        Intent i = new Intent(getContext(), BookList.class);
         i.putExtra("current_user", current_user);
         i.putExtra("filter_genre", genreList.get(position));
         startActivity(i);
