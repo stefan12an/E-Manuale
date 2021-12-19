@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@color/grey_800"
+    android:background="@color/warning_500"
     android:elevation="4dp"
     app:title="@string/app_name"
     android:id="@+id/myToolBar"

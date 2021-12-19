@@ -12,20 +12,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.stefan.reserv.Model.Movie;
+import com.stefan.reserv.Model.Book;
 import com.stefan.reserv.R;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 
-public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MyViewHolder> {
+public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyViewHolder> {
 
     Context context;
-    ArrayList<Movie> movieList;
+    ArrayList<Book> bookList;
     OnMovieClickListener onMovieClickListener;
-    public MovieListAdapter(Context context, ArrayList<Movie> movieList, OnMovieClickListener onMovieClickListener) {
+    public BookListAdapter(Context context, ArrayList<Book> bookList, OnMovieClickListener onMovieClickListener) {
         this.context = context;
-        this.movieList = movieList;
+        this.bookList = bookList;
         this.onMovieClickListener = onMovieClickListener;
     }
 
@@ -33,22 +33,22 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MyVi
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.each_movie, parent, false);
+        View view = inflater.inflate(R.layout.each_book, parent, false);
         return new MyViewHolder(view, onMovieClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        ByteArrayInputStream imageStream = new ByteArrayInputStream(movieList.get(position).getMovie_poster());
+        ByteArrayInputStream imageStream = new ByteArrayInputStream(bookList.get(position).getMovie_poster());
         Bitmap theImage = BitmapFactory.decodeStream(imageStream);
         holder.movie_poster.setImageBitmap(theImage);
-        holder.movie_title.setText(movieList.get(position).getTitle());
-        holder.movie_date.setText(movieList.get(position).getRelease_date());
+        holder.movie_title.setText(bookList.get(position).getTitle());
+        holder.movie_date.setText(bookList.get(position).getRelease_date());
     }
 
     @Override
     public int getItemCount() {
-        return movieList.size();
+        return bookList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

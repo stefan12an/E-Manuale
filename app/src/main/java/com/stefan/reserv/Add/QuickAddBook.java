@@ -34,9 +34,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class QuickAddMovie extends AppCompatActivity implements GenreAdapter.OnGenreClickListener {
+public class QuickAddBook extends AppCompatActivity implements GenreAdapter.OnGenreClickListener {
     private EditText movie_name;
     private Button save_button, del_button;
     private ImageView movie_poster;
@@ -52,7 +51,7 @@ public class QuickAddMovie extends AppCompatActivity implements GenreAdapter.OnG
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quick_add_movie);
+        setContentView(R.layout.activity_quick_add_book);
         click_color = ContextCompat.getColor(this, R.color.grey_500);
         unclick_color = ContextCompat.getColor(this, R.color.warning_700);
         genreList = new ArrayList<>();
@@ -69,13 +68,13 @@ public class QuickAddMovie extends AppCompatActivity implements GenreAdapter.OnG
         del_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddMovie.this);
-                myDB.deleteCinemaData();
+                MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddBook.this);
+                myDB.deleteGradeData();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(new Intent(QuickAddMovie.this, MainActivity.class));
+                        startActivity(new Intent(QuickAddBook.this, MainActivity.class));
                         finish();
                     }
                 }, 500);
@@ -84,9 +83,9 @@ public class QuickAddMovie extends AppCompatActivity implements GenreAdapter.OnG
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddMovie.this);
-                myDB.insertMovieData(movie_name.getText().toString().trim(), photo);
-                myDB.insertMovieGenreData(movie_name.getText().toString().trim(), selectedGenres);
+                MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddBook.this);
+                myDB.insertBookData(movie_name.getText().toString().trim(), photo);
+                myDB.insertBookGenreData(movie_name.getText().toString().trim(), selectedGenres);
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -109,12 +108,12 @@ public class QuickAddMovie extends AppCompatActivity implements GenreAdapter.OnG
                 .setGuidelines(CropImageView.Guidelines.ON)
                 .setMinCropResultSize(320, 566)
                 .setMinCropWindowSize(320, 566)
-                .getIntent(QuickAddMovie.this);
+                .getIntent(QuickAddBook.this);
         startActivityForResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
     private Bitmap getBitmapFromUri(Uri uri) throws IOException {
-        ParcelFileDescriptor parcelFileDescriptor = QuickAddMovie.this.getContentResolver().openFileDescriptor(uri, "r");
+        ParcelFileDescriptor parcelFileDescriptor = QuickAddBook.this.getContentResolver().openFileDescriptor(uri, "r");
         FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
         Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
         parcelFileDescriptor.close();
@@ -151,7 +150,7 @@ public class QuickAddMovie extends AppCompatActivity implements GenreAdapter.OnG
                 photo = baos.toByteArray();
                 movie_poster.setImageURI(postImageUri);
             } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Toast.makeText(QuickAddMovie.this, result.getError().getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(QuickAddBook.this, result.getError().getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }

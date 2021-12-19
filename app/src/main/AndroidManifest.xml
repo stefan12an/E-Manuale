@@ -19,22 +19,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MovieView"
+            android:name=".BookView"
             android:exported="true" />
         <activity
             android:name=".LoginActivity"
             android:exported="true"/>
         <activity
-            android:name=".MovieList"
+            android:name=".BookList"
             android:exported="true" />
         <activity
             android:name=".RegisterActivity"
             android:exported="true" />
         <activity
-            android:name=".Add.QuickAddCinema"
+            android:name=".Add.QuickAddGrade"
             android:exported="true" />
         <activity
-            android:name=".Add.QuickAddMovie"
+            android:name=".Add.QuickAddBook"
             android:exported="true" />
         <activity
             android:name=".Add.QuickAddGenre"

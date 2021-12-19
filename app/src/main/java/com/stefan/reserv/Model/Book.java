@@ -3,17 +3,17 @@ package com.stefan.reserv.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Movie implements Parcelable {
+public class Book implements Parcelable {
     String id;
     String title;
     String release_date;
-    byte[] movie_poster;
+    byte[] book_poster;
 
-    public Movie(String id, String title, String release_date, byte[] movie_poster) {
+    public Book(String id, String title, String release_date, byte[] movie_poster) {
         this.id = id;
         this.title = title;
         this.release_date = release_date;
-        this.movie_poster = movie_poster;
+        this.book_poster = movie_poster;
     }
 
     public String getId() {
@@ -29,7 +29,7 @@ public class Movie implements Parcelable {
     }
 
     public byte[] getMovie_poster() {
-        return movie_poster;
+        return book_poster;
     }
 
     @Override
@@ -42,23 +42,23 @@ public class Movie implements Parcelable {
         dest.writeString(id);
         dest.writeString(title);
         dest.writeString(release_date);
-        dest.writeByteArray(movie_poster);
+        dest.writeByteArray(book_poster);
     }
-    public static final Parcelable.Creator<Movie> CREATOR
-            = new Parcelable.Creator<Movie>() {
-        public Movie createFromParcel(Parcel in) {
-            return new Movie(in);
+    public static final Parcelable.Creator<Book> CREATOR
+            = new Parcelable.Creator<Book>() {
+        public Book createFromParcel(Parcel in) {
+            return new Book(in);
         }
 
-        public Movie[] newArray(int size) {
-            return new Movie[size];
+        public Book[] newArray(int size) {
+            return new Book[size];
         }
     };
 
-    private Movie(Parcel in) {
+    private Book(Parcel in) {
         id = in.readString();
         title = in.readString();
         release_date = in.readString();
-        movie_poster = in.createByteArray();
+        book_poster = in.createByteArray();
     }
 }

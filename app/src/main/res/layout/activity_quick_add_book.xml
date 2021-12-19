@@ -4,67 +4,64 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Add.QuickAddCinema">
+    tools:context=".Add.QuickAddGrade">
 
     <EditText
-        android:id="@+id/cinema_name"
+        android:id="@+id/movie_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="Name"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/cinema_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:hint="Location"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cinema_name" />
+        app:layout_constraintTop_toBottomOf="@+id/genre_recyclerView" />
 
     <Button
-        android:id="@+id/saveCinemaToDB"
+        android:id="@+id/saveMovieToDB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:backgroundTint="@color/white"
-        android:text="Send"
+        android:text="Save"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cinema_location" />
+        app:layout_constraintTop_toBottomOf="@+id/movie_title" />
 
     <Button
-        android:id="@+id/delete_cinema_data"
+        android:id="@+id/delete_movies_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:backgroundTint="@color/design_default_color_error"
         android:text="Delete"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saveCinemaToDB" />
+        app:layout_constraintTop_toBottomOf="@+id/saveMovieToDB" />
 
     <ImageView
-        android:id="@+id/cinema_photo"
+        android:id="@+id/movie_photo"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="300dp"
         android:layout_margin="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/cinema_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sala_1" />
+        app:srcCompat="@drawable/popular_4" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/genre_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/movie_photo"
+        tools:layout_editor_absoluteX="1dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,31 +1,18 @@
 package com.stefan.reserv.Adapter;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.stefan.reserv.Model.Cinema;
-import com.stefan.reserv.Model.Movie;
 import com.stefan.reserv.R;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 
 public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.MyViewHolder> {
     Context context;
