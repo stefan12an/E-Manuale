@@ -9,7 +9,7 @@
     android:elevation="4dp"
     app:title="@string/app_name"
     android:id="@+id/myToolBar"
-    android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+    android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"
     app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light">
 
 </androidx.appcompat.widget.Toolbar>

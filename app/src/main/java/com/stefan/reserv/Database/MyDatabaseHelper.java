@@ -1,21 +1,33 @@
 package com.stefan.reserv.Database;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.stefan.reserv.Model.Book;
+import com.stefan.reserv.Model.User;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
     private static final String username = "admin";
@@ -23,25 +35,18 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     private static final String password = "1904stef";
     private final Context context;
     private static final String DATABASE_NAME = "reserv.db";
-    private static final int DATABASE_VERSION = 26;
+    private static String DATABASE_PATH = "";
+    private static final int DATABASE_VERSION = 56;
 
     //TABLE NAMES
-    private static final String GRADE_TABLE_NAME = "GRADE";
+    private static final String CLASA_TABLE_NAME = "CLASA";
     private static final String BOOK_TABLE_NAME = "BOOK";
     private static final String USER_TABLE_NAME = "USER";
-    private static final String GENRE_TABLE_NAME = "GENRE";
-    private static final String BOOK_GENRE_TABLE_NAME = "BOOK_GENRE";
-        private static final String CINEMA_TABLE_NAME = "CINEMA";
-    private static final String MOVIE_TABLE_NAME = "MOVIE";
-    private static final String MOVIE_GENRE_TABLE_NAME = "MOVIE_GENRE";
-    private static final String RESERVATION_TABLE_NAME = "RESERVATION";
-    private static final String SEAT_TABLE_NAME = "SEAT";
-    private static final String SEAT_RESERVATION_TABLE_NAME = "SEAT_RESERVATION";
-    private static final String HALL_TABLE_NAME = "HALL";
-    private static final String MOVIE_SCHEDULE_TABLE_NAME = "MOVIE_SCHEDULE";
-    //COLUMNS GRADE TABLE
-    private static final String GRADE_COLUMN_ID = "id";
-    private static final String GRADE_COLUMN_NAME = "name";
+    private static final String MATERIE_TABLE_NAME = "MATERIE";
+
+    //COLUMNS CLASA TABLE
+    private static final String CLASA_COLUMN_ID = "id";
+    private static final String CLASA_COLUMN_NAME = "name";
     //COLUMNS USER TABLE
     private static final String USER_COLUMN_ID = "id";
     private static final String USER_COLUMN_USERNAME = "username";
@@ -49,65 +54,66 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     private static final String USER_COLUMN_PASSWORD = "password";
     private static final String USER_COLUMN_ROLE = "role";
     private static final String USER_COLUMN_PICTURE = "profile_pic";
+    private static final String USER_COLUMN_ID_GRADE = "id_grade";
+
     //COLUMNS BOOK TABLE
     private static final String BOOK_COLUMN_ID = "id";
-    private static final String BOOK_COLUMN_TITLE = "title";
+    private static final String BOOK_COLUMN_TITLE = "titlu";
     private static final String BOOK_COLUMN_RELEASE_DATE = "release_date";
-    private static final String BOOK_COLUMN_PHOTO = "poster";
-    private static final String BOOK_COLUMN_PATH = "pdf";
-    private static final String BOOK_COLUMN_AUTHOR = "author";
+    private static final String BOOK_COLUMN_PHOTO = "preview";
+    private static final String BOOK_COLUMN_AUTOR = "autor";
+    private static final String BOOK_COLUMN_FAVORIT = "favorit";
+    private static final String BOOK_COLUMN_ID_CLASA = "id_clasa";
+    private static final String BOOK_COLUMN_ID_MATERIE = "id_materie";
 
-    //COLUMNS GENRE TABLE
-    private static final String GENRE_COLUMN_ID = "id";
-    private static final String GENRE_COLUMN_NAME = "name";
+    //COLUMNS MATERIE TABLE
+    private static final String MATERIE_COLUMN_ID = "id";
+    private static final String MATERIE_COLUMN_NAME = "name";
 
-    //COLUMNS BOOK_GENRE TABLE
-    private static final String BOOK_GENRE_COLUMN_ID = "id";
-    private static final String BOOK_GENRE_COLUMN_ID_MOVIE = "id_book";
-    private static final String BOOK_GENRE_COLUMN_ID_GENRE = "id_genre";
 
     public MyDatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
+        assert context != null;
+        DATABASE_PATH = context.getDatabasePath(DATABASE_NAME).getAbsolutePath();
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query_grade = "CREATE TABLE " + GRADE_TABLE_NAME + " ("
-                + GRADE_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + GRADE_COLUMN_NAME + " TEXT);";
+        String query_clasa = "CREATE TABLE IF NOT EXISTS  " + CLASA_TABLE_NAME + " ("
+                + CLASA_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + CLASA_COLUMN_NAME + " TEXT);";
 
-        String query_book = "CREATE TABLE " + BOOK_TABLE_NAME + " ("
+        String query_book = "CREATE TABLE IF NOT EXISTS " + BOOK_TABLE_NAME + " ("
                 + BOOK_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + BOOK_COLUMN_TITLE + " TEXT, "
                 + BOOK_COLUMN_RELEASE_DATE + " TEXT, "
                 + BOOK_COLUMN_PHOTO + " BLOB, "
-                + BOOK_COLUMN_PATH + " BLOB, "
-                + BOOK_COLUMN_AUTHOR + " TEXT);";
+                + BOOK_COLUMN_AUTOR + " TEXT, "
+                + BOOK_COLUMN_FAVORIT + " INTEGER, "
+                + BOOK_COLUMN_ID_CLASA + " INTEGER, "
+                + BOOK_COLUMN_ID_MATERIE + " INTEGER, "
+                + "FOREIGN KEY(" + BOOK_COLUMN_ID_CLASA + ") REFERENCES " + CLASA_TABLE_NAME + "(" + CLASA_COLUMN_ID + "), "
+                + "FOREIGN KEY(" + BOOK_COLUMN_ID_MATERIE + ") REFERENCES " + MATERIE_TABLE_NAME + "(" + MATERIE_COLUMN_ID + "));";
 
-        String query_user = "CREATE TABLE " + USER_TABLE_NAME + " ("
+        String query_user = "CREATE TABLE IF NOT EXISTS  " + USER_TABLE_NAME + " ("
                 + USER_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + USER_COLUMN_USERNAME + " TEXT, "
                 + USER_COLUMN_EMAIL + " TEXT, "
                 + USER_COLUMN_PASSWORD + " TEXT, "
                 + USER_COLUMN_ROLE + " TEXT, "
-                + USER_COLUMN_PICTURE + " BLOB);";
+                + USER_COLUMN_PICTURE + " BLOB, "
+                + USER_COLUMN_ID_GRADE + " INTEGER, "
+                + "FOREIGN KEY(" + USER_COLUMN_ID_GRADE + ") REFERENCES " + CLASA_TABLE_NAME + "(" + CLASA_COLUMN_ID + "));";
 
-        String query_genre = "CREATE TABLE " + GENRE_TABLE_NAME + " ("
-                + GENRE_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + GENRE_COLUMN_NAME + " TEXT);";
+        String query_materie = "CREATE TABLE IF NOT EXISTS  " + MATERIE_TABLE_NAME + " ("
+                + MATERIE_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + MATERIE_COLUMN_NAME + " TEXT);";
 
-        String query_genre_book = "CREATE TABLE " + BOOK_GENRE_TABLE_NAME + " ("
-                + BOOK_GENRE_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + BOOK_GENRE_COLUMN_ID_MOVIE + " INTEGER, "
-                + BOOK_GENRE_COLUMN_ID_GENRE + " INTEGER, "
-                + "FOREIGN KEY(" + BOOK_GENRE_COLUMN_ID_MOVIE + ") REFERENCES " + BOOK_TABLE_NAME + "(" + BOOK_COLUMN_ID + "), "
-                + "FOREIGN KEY(" + BOOK_GENRE_COLUMN_ID_GENRE + ") REFERENCES " + GENRE_TABLE_NAME + "(" + GENRE_COLUMN_ID + "));";
-        db.execSQL(query_grade);
+        db.execSQL(query_clasa);
         db.execSQL(query_book);
         db.execSQL(query_user);
-        db.execSQL(query_genre);
-        db.execSQL(query_genre_book);
+        db.execSQL(query_materie);
     }
 
     @Override
@@ -117,50 +123,27 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                 USER_COLUMN_EMAIL + ", " +
                 USER_COLUMN_PASSWORD + ", " +
                 USER_COLUMN_ROLE + ") VALUES ('" + username + "', '" + email + "', '" + password + "', " + "'admin');";
-        db.execSQL("DROP TABLE IF EXISTS " + GRADE_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + CLASA_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + BOOK_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + GENRE_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + BOOK_GENRE_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + CINEMA_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + MOVIE_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + MOVIE_GENRE_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + HALL_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + RESERVATION_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + SEAT_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + SEAT_RESERVATION_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + MOVIE_SCHEDULE_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + MATERIE_TABLE_NAME);
         onCreate(db);
         db.execSQL(user_query);
     }
 
-    public void insertUserData(String username, String email, String password, byte[] profile_pic) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(USER_COLUMN_USERNAME, username);
-        cv.put(USER_COLUMN_EMAIL, email);
-        cv.put(USER_COLUMN_PASSWORD, password);
-        cv.put(USER_COLUMN_ROLE, "user");
-        cv.put(USER_COLUMN_PICTURE, profile_pic);
-        long result = db.insert(USER_TABLE_NAME, null, cv);
-        if (result == -1) {
-            Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
-
-        }
-    }
+    //##########################CHECK########################################
 
     public Cursor checkUserCredentials(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
+        Log.e(TAG, "checkUserCredentials: " + this.getReadableDatabase().isOpen());
+        Log.e(TAG, "checkUserCredentials: " + this.getReadableDatabase().isDatabaseIntegrityOk());
         String query = "SELECT * FROM " + USER_TABLE_NAME + " WHERE email= '" + email + "'" +
                 " AND password= '" + password + "';";
         Cursor cursor = null;
-
-        if (db != null) {
+        if(db != null) {
             cursor = db.rawQuery(query, null);
         }
-        switch (cursor.getCount()) {
+        switch (Objects.requireNonNull(cursor).getCount()) {
             case 0:
                 Toast.makeText(context, "There is no user registered with these credentials", Toast.LENGTH_SHORT).show();
                 return null;
@@ -186,7 +169,27 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public void insertBookData(String name, byte[] photo) {
+    //##########################INSERT########################################
+
+    public void insertUserData(String username, String email, String password, byte[] profile_pic, int grade_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(USER_COLUMN_USERNAME, username);
+        cv.put(USER_COLUMN_EMAIL, email);
+        cv.put(USER_COLUMN_PASSWORD, password);
+        cv.put(USER_COLUMN_ROLE, "user");
+        cv.put(USER_COLUMN_PICTURE, profile_pic);
+        cv.put(USER_COLUMN_ID_GRADE, grade_id);
+        long result = db.insert(USER_TABLE_NAME, null, cv);
+        if (result == -1) {
+            Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
+            db.close();
+        }
+    }
+
+    public void insertBookData(String name, byte[] photo, String author) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         Date currentTime = Calendar.getInstance().getTime();
@@ -194,9 +197,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         String date = format1.format(currentTime);
         cv.put(BOOK_COLUMN_TITLE, name);
         cv.put(BOOK_COLUMN_RELEASE_DATE, date);
-        cv.put(BOOK_COLUMN_PHOTO, photo);
-        cv.put(BOOK_COLUMN_PATH, (byte[]) null);
-        cv.put(BOOK_COLUMN_AUTHOR, "Gigel");
         long result = db.insert(BOOK_TABLE_NAME, null, cv);
         if (result == -1) {
             Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
@@ -205,59 +205,18 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void insertBookGenreData(String name, ArrayList<String> genreList) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        for (String genre : genreList) {
-            String query1 = "SELECT * FROM " + GENRE_TABLE_NAME + " WHERE name= '" + genre + "';";
-            String query2 = "SELECT * FROM " + BOOK_TABLE_NAME + " WHERE title= '" + name + "';";
-            Cursor cursor1 = null;
-            Cursor cursor2 = null;
-            if (db != null) {
-                cursor1 = db.rawQuery(query1, null);
-                cursor2 = db.rawQuery(query2, null);
-            }
-            while (cursor1.moveToNext()) {
-                cv.put(BOOK_GENRE_COLUMN_ID_GENRE, cursor1.getInt(0));
-            }
-            while (cursor2.moveToNext()) {
-                cv.put(BOOK_GENRE_COLUMN_ID_MOVIE, cursor2.getInt(0));
-            }
-            long result = db.insert(BOOK_GENRE_TABLE_NAME, null, cv);
-            if (result == -1) {
-                Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    public void insertGradeData(String name) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-
-        cv.put(GRADE_COLUMN_NAME, name);
-        long result = db.insert(GRADE_TABLE_NAME, null, cv);
-        if (result == -1) {
-            Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
-
-        }
-    }
-
-    public boolean insertGenreData(String genre) {
+    public boolean insertMaterie(String materie) {
         SQLiteDatabase w_db = this.getWritableDatabase();
         SQLiteDatabase r_db = this.getReadableDatabase();
         ContentValues cv = new ContentValues();
-        String query = "SELECT * FROM " + GENRE_TABLE_NAME + " WHERE name= '" + genre + "';";
+        String query = "SELECT * FROM " + MATERIE_TABLE_NAME + " WHERE name= '" + materie + "';";
         Cursor cursor = null;
         if (r_db != null) {
             cursor = r_db.rawQuery(query, null);
         }
         if (cursor.getCount() == 0) {
-            cv.put(GENRE_COLUMN_NAME, genre);
-            long result = w_db.insert(GENRE_TABLE_NAME, null, cv);
+            cv.put(MATERIE_COLUMN_NAME, materie);
+            long result = w_db.insert(MATERIE_TABLE_NAME, null, cv);
             if (result == -1) {
                 Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
             } else {
@@ -270,28 +229,60 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    public void deleteGradeData() {
+    public void insertClase() {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        List<String> grades = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8");
+        for (int i = 0; i < grades.size(); i++) {
+//            String grades_query = "INSERT INTO " + CLASA_TABLE_NAME + " ("
+//                    + CLASA_COLUMN_NAME + ") VALUES ('" + grades.get(i) + "');";
+//            Log.e(TAG, "onUpgrade: " + grades.get(i));
+            cv.put(CLASA_COLUMN_NAME, grades.get(i));
+            long result = db.insert(CLASA_TABLE_NAME, null, cv);
+            if (result == -1) {
+                Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
+            }
+//            db.execSQL(grades_query);
+        }
+    }
+
+    //##########################DELETE########################################
+
+    public void deleteClase() {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + GRADE_TABLE_NAME;
+        String query = "DELETE FROM " + CLASA_TABLE_NAME;
         db.execSQL(query);
     }
 
-    public void deleteGenreData() {
+    public void deleteMaterii() {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + GENRE_TABLE_NAME;
+        String query = "DELETE FROM " + MATERIE_TABLE_NAME;
         db.execSQL(query);
     }
 
     public void deleteSpecificBook(@NonNull Book book) {
         SQLiteDatabase db = this.getWritableDatabase();
         String query_book = "DELETE FROM " + BOOK_TABLE_NAME + " WHERE id= '" + book.getId() + "';";
-        String query_book_genre = "DELETE FROM " + BOOK_GENRE_TABLE_NAME + " WHERE id_movie= '" + book.getId() + "';";
         db.execSQL(query_book);
-        db.execSQL(query_book_genre);
     }
 
-    public Cursor readAllGradeData() {
-        String query = "SELECT * FROM " + GRADE_TABLE_NAME;
+    //##########################READ########################################
+
+    public Cursor viewClase() {
+        String query = "SELECT * FROM " + CLASA_TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public Cursor viewMaterii() {
+        String query = "SELECT * FROM " + MATERIE_TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = null;
@@ -302,27 +293,14 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public Cursor readAllGenreData() {
-        String query = "SELECT * FROM " + GENRE_TABLE_NAME;
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = null;
-
-        if (db != null) {
-            cursor = db.rawQuery(query, null);
-        }
-        return cursor;
-    }
-
-    public Cursor readAllBookData(String filter_genre) {
+    public Cursor readAllBookData(String filter_genre, User user) {
         String query;
         if (filter_genre == null) {
-            query = "SELECT * FROM " + BOOK_TABLE_NAME;
+            query = "SELECT * FROM " + BOOK_TABLE_NAME + " WHERE id_clasa= '" + user.getId_clasa() + "';";
         } else {
-            query = "SELECT * FROM " + BOOK_TABLE_NAME + " AS F INNER JOIN "
-                    + BOOK_GENRE_TABLE_NAME + " AS GN ON F.id = GN.id_book INNER JOIN "
-                    + GENRE_TABLE_NAME + " AS G ON GN.id_genre = G.id WHERE G.name = '"
-                    + filter_genre + "';";
+            query = "SELECT * FROM " + BOOK_TABLE_NAME + " AS B INNER JOIN "
+                    + MATERIE_TABLE_NAME + " AS M ON M.id = B.id_materie WHERE M.name = '"
+                    + filter_genre + "' AND B.id_clasa= '" + user.getId_clasa() + "';";
         }
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -335,18 +313,92 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor readAllBookSpecificGenreData(@NonNull Book book) {
-        String query = "SELECT * FROM " + GENRE_TABLE_NAME + " AS G INNER JOIN "
-                + BOOK_GENRE_TABLE_NAME + " AS GN ON G.id = GN.id_genre INNER JOIN "
-                + BOOK_TABLE_NAME + " AS F ON GN.id_book = F.id WHERE F.id = '"
-                + book.getId() + "';";
+        String query1 = null;
+        String query2 = null;
+        String query = "SELECT id_materie, id_clasa FROM " + BOOK_TABLE_NAME + " WHERE id= '" + book.getId() + "';";
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = null;
+        Cursor cursor2 = null;
 
         if (db != null) {
             cursor = db.rawQuery(query, null);
         }
-        return cursor;
+        while (cursor.moveToNext()) {
+            query1 = "SELECT name FROM " + MATERIE_TABLE_NAME + " WHERE id= '" + cursor.getString(0) + "';";
+            query2 = "SELECT name FROM " + CLASA_TABLE_NAME + " WHERE id= '" + cursor.getString(1) + "';";
+        }
+        if (db != null) {
+            cursor2 = db.rawQuery(query1, null);
+        }
+        return cursor2;
     }
 
+    public void insertBooks(String[] name, String materie, String clasa) {
+        String materie_aleasa = null;
+        String clasa_aleasa = null;
+        SQLiteDatabase db_r = this.getReadableDatabase();
+        SQLiteDatabase db_w = this.getWritableDatabase();
+        String query_materie = "SELECT * FROM " + MATERIE_TABLE_NAME + " WHERE name= '" + materie + "';";
+        String query_clasa = "SELECT * FROM " + CLASA_TABLE_NAME + " WHERE name= '" + clasa + "';";
+        Cursor cursor_materie = null;
+        Cursor cursor_clasa = null;
+        if (db_r != null) {
+            cursor_materie = db_r.rawQuery(query_materie, null);
+            cursor_clasa = db_r.rawQuery(query_clasa, null);
+        }
+        while (true) {
+            assert cursor_materie != null;
+            if (!cursor_materie.moveToNext()) break;
+            materie_aleasa = cursor_materie.getString(0);
+        }
+        while (true) {
+            assert cursor_clasa != null;
+            if (!cursor_clasa.moveToNext()) break;
+            clasa_aleasa = cursor_clasa.getString(0);
+        }
+        for (String s : name) {
+            ContentValues cv = new ContentValues();
+            Date currentTime = Calendar.getInstance().getTime();
+            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+            String date = format1.format(currentTime);
+            cv.put(BOOK_COLUMN_TITLE, s);
+            cv.put(BOOK_COLUMN_RELEASE_DATE, date);
+            cv.put(BOOK_COLUMN_ID_MATERIE, materie_aleasa);
+            cv.put(BOOK_COLUMN_ID_CLASA, clasa_aleasa);
+            long result = db_w.insert(BOOK_TABLE_NAME, null, cv);
+            if (result == -1) {
+                Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void copyDatabase() {
+        this.getReadableDatabase();
+        Log.i("Database",
+                "New database is being copied to device!");
+        byte[] buffer = new byte[1024];
+        OutputStream myOutput = null;
+        int length;
+        // Open your local db as the input stream
+        InputStream myInput = null;
+        try {
+            myInput = context.getAssets().open("Database/" + DATABASE_NAME);
+            // transfer bytes from the inputfile to the
+            // outputfile
+            myOutput = new FileOutputStream(DATABASE_PATH);
+            while ((length = myInput.read(buffer)) > 0) {
+                myOutput.write(buffer, 0, length);
+            }
+            myInput.close();
+            myOutput.flush();
+            myOutput.close();
+            Log.i("Database",
+                    "New database has been copied to device!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

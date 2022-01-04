@@ -93,4 +93,17 @@ public class PreferenceUtils {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(Constants.KEY_USERNAME, null);
     }
+
+    public static boolean saveGradeId(String id_grade, Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(Constants.KEY_ID, id_grade);
+        editor.apply();
+        return true;
+    }
+
+    public static String getGradeId(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString(Constants.KEY_ID, null);
+    }
 }

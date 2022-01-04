@@ -13,6 +13,8 @@
     <color name="confirm">#00897B</color>
     <color name="warning_700">#FFA000</color>
     <color name="warning_500" id="warning_500">#FFA454</color>
+    <color name="raisin_black">#1E212B</color>
+    <color name="maximum_green">#4D8B31</color>
     <color name="warning_300">#FFAF89</color>
     <color name="remove">#C62828</color>
     <color name="help">#673AB7</color>

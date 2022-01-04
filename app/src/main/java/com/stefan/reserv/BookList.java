@@ -25,14 +25,15 @@ import com.stefan.reserv.Model.User;
 
 import java.util.ArrayList;
 
-public class BookList extends AppCompatActivity implements BookListAdapter.OnMovieClickListener {
+public class BookList extends AppCompatActivity implements BookListAdapter.OnBookClickListener {
     private ArrayList<Book> bookList;
     private BookListAdapter bookListAdapter;
-    private RecyclerView movieRv;
+    private RecyclerView bookRv;
     private MyDatabaseHelper myDB;
     private Book book;
     private User current_user;
-    private String filter_genre;
+    private String filter_materie;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,33 +46,33 @@ public class BookList extends AppCompatActivity implements BookListAdapter.OnMov
         if (getIntent().hasExtra("current_user")) {
             Bundle bundle = getIntent().getExtras();
             current_user = bundle.getParcelable("current_user");
-            if(getIntent().hasExtra("filter_genre")){
-                filter_genre = bundle.getString("filter_genre");
+            if (getIntent().hasExtra("filter_materie")) {
+                filter_materie = bundle.getString("filter_materie");
             }
         }
-        Log.e(TAG, "onCreate: Filtered genre = " + filter_genre + ", " + current_user.getRole());
+        Log.e(TAG, "onCreate: Filtered genre = " + filter_materie + ", " + current_user.getRole());
         myDB = new MyDatabaseHelper(this);
-        movieRv = findViewById(R.id.movie_list_recyclerView);
+        bookRv = findViewById(R.id.book_list_recyclerView);
         bookListAdapter = new BookListAdapter(this, bookList, this);
-        if(current_user.getRole().equals("admin")) {
-            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(movieRv);
+        if (current_user.getRole().equals("admin")) {
+            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(bookRv);
         }
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,
                 LinearLayoutManager.VERTICAL);
         dividerItemDecoration.setDrawable(this.getResources().getDrawable(R.drawable.devider));
-        movieRv.setAdapter(bookListAdapter);
-        movieRv.setLayoutManager(new LinearLayoutManager(this));
-        movieRv.addItemDecoration(dividerItemDecoration);
+        bookRv.setAdapter(bookListAdapter);
+        bookRv.setLayoutManager(new LinearLayoutManager(this));
+        bookRv.addItemDecoration(dividerItemDecoration);
         displayAllMovies();
     }
 
     void displayAllMovies() {
-        Cursor cursor = myDB.readAllBookData(filter_genre);
+        Cursor cursor = myDB.readAllBookData(filter_materie, current_user);
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "No data.", Toast.LENGTH_SHORT).show();
         } else {
             while (cursor.moveToNext()) {
-                book = new Book(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3));
+                book = new Book(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3), cursor.getString(4), Boolean.getBoolean(cursor.getString(5)), cursor.getString(6), cursor.getString(7));
                 bookList.add(book);
             }
             bookListAdapter.notifyDataSetChanged();
@@ -88,7 +89,7 @@ public class BookList extends AppCompatActivity implements BookListAdapter.OnMov
     }
 
     @Override
-    public void OnMovieClick(int position) {
+    public void OnBookClick(int position) {
         Intent i = new Intent(this, BookView.class);
         i.putExtra("movie", bookList.get(position));
         Log.e(TAG, "OnMovieClick " + bookList.get(position).getTitle());
@@ -104,6 +105,7 @@ public class BookList extends AppCompatActivity implements BookListAdapter.OnMov
                 public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                     return false;
                 }
+
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                     myDB.deleteSpecificBook(bookList.get(viewHolder.getAdapterPosition()));

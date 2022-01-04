@@ -10,22 +10,25 @@ public class User implements Parcelable {
     private String password;
     private String role;
     private byte[] profile_pic;
+    private String id_clasa;
 
-    public User(String id, String username, String email, String password, String role, byte[] profile_pic) {
+    public User(String id, String username, String email, String password, String role, byte[] profile_pic, String id_clasa) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
         this.profile_pic = profile_pic;
+        this.id_clasa = id_clasa;
     }
 
-    public User(String id, String username, String email, String password, String role) {
+    public User(String id, String username, String email, String password, String role, String id_clasa) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.id_clasa = id_clasa;
     }
 
     public String getUsername() {
@@ -52,6 +55,14 @@ public class User implements Parcelable {
         return role;
     }
 
+    public String getId_clasa() {
+        return id_clasa;
+    }
+
+    public void setId_clasa(String id_clasa) {
+        this.id_clasa = id_clasa;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -65,6 +76,7 @@ public class User implements Parcelable {
         dest.writeString(password);
         dest.writeString(role);
         dest.writeByteArray(profile_pic);
+        dest.writeString(id_clasa);
     }
     public static final Parcelable.Creator<User> CREATOR
             = new Parcelable.Creator<User>() {
@@ -84,5 +96,6 @@ public class User implements Parcelable {
         password = in.readString();
         role = in.readString();
         profile_pic = in.createByteArray();
+        id_clasa = in.readString();
     }
 }

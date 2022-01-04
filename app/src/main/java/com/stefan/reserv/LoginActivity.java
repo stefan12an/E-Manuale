@@ -7,11 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,11 +21,11 @@ import com.stefan.reserv.Utils.PreferenceUtils;
 import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
-    TextView goto_register;
-    TextInputEditText login_email, login_password;
-    Button login_send;
-    MyDatabaseHelper myDB;
-    User user;
+    private TextView goto_register;
+    private TextInputEditText login_email, login_password;
+    private Button login_send;
+    private MyDatabaseHelper myDB;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +35,6 @@ public class LoginActivity extends AppCompatActivity {
         login_email = findViewById(R.id.login_email);
         login_password = findViewById(R.id.login_password);
         login_send = findViewById(R.id.login_button);
-        if (PreferenceUtils.getEmail(this) != null && !PreferenceUtils.getEmail(this).equals("")) {
-            startActivity(new Intent(this, MainActivity.class));
-        }
         myDB = new MyDatabaseHelper(LoginActivity.this);
         login_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,15 +46,16 @@ public class LoginActivity extends AppCompatActivity {
                     if (cursor.getCount() == 1) {
                         while (cursor.moveToNext()) {
                             if (cursor.getBlob(5) == null) {
-                                user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+                                user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(6));
                             } else {
-                                user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getBlob(5));
+                                user = new User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getBlob(5), cursor.getString(6));
                             }
                             PreferenceUtils.saveId(user.getId(), LoginActivity.this);
-                            PreferenceUtils.saveUsername(user.getUsername(),LoginActivity.this);
+                            PreferenceUtils.saveUsername(user.getUsername(), LoginActivity.this);
                             PreferenceUtils.saveEmail(user.getEmail(), LoginActivity.this);
                             PreferenceUtils.savePassword(user.getPassword(), LoginActivity.this);
                             PreferenceUtils.saveRole(user.getRole(), LoginActivity.this);
+                            PreferenceUtils.saveGradeId(user.getId_clasa(), LoginActivity.this);
                             if (user.getProfile_pic() != null) {
                                 PreferenceUtils.savePic(user.getProfile_pic(), LoginActivity.this);
                             }
