@@ -26,7 +26,7 @@ public class QuickAddGenre extends AppCompatActivity {
 
         del_button.setOnClickListener(v -> {
             MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddGenre.this);
-            myDB.deleteGenreData();
+            myDB.deleteMaterii();
             Handler handler = new Handler();
             handler.postDelayed(() -> {
                 startActivity(new Intent(QuickAddGenre.this, MainActivity.class));
@@ -36,7 +36,7 @@ public class QuickAddGenre extends AppCompatActivity {
 
         save_button.setOnClickListener(v -> {
             MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddGenre.this);
-            if (myDB.insertGenreData(genre_name.getText().toString().trim())) {
+            if (myDB.insertMaterie(genre_name.getText().toString().trim())) {
                 Handler handler = new Handler();
                 handler.postDelayed(this::finish, 800);
             }

@@ -7,4 +7,5 @@ public class Constants {
     public static String KEY_PASSWORD = "password";
     public static String KEY_ROLE = "role";
     public static String KEY_PROFILE_PIC = "profile_pic";
+    public static String KEY_GRADE = "id_grade";
 }

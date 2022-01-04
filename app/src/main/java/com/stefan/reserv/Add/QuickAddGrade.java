@@ -47,7 +47,7 @@ public class QuickAddGrade extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddGrade.this);
-                myDB.deleteGradeData();
+                myDB.deleteClase();
                 Handler handler=new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -63,7 +63,6 @@ public class QuickAddGrade extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MyDatabaseHelper myDB = new MyDatabaseHelper(QuickAddGrade.this);
-                myDB.insertGradeData(editText1.getText().toString().trim());
                 Handler handler=new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override

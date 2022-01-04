@@ -22,11 +22,11 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
 
     Context context;
     ArrayList<Book> bookList;
-    OnMovieClickListener onMovieClickListener;
-    public BookListAdapter(Context context, ArrayList<Book> bookList, OnMovieClickListener onMovieClickListener) {
+    OnBookClickListener onBookClickListener;
+    public BookListAdapter(Context context, ArrayList<Book> bookList, OnBookClickListener onBookClickListener) {
         this.context = context;
         this.bookList = bookList;
-        this.onMovieClickListener = onMovieClickListener;
+        this.onBookClickListener = onBookClickListener;
     }
 
     @NonNull
@@ -34,14 +34,18 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.each_book, parent, false);
-        return new MyViewHolder(view, onMovieClickListener);
+        return new MyViewHolder(view, onBookClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        ByteArrayInputStream imageStream = new ByteArrayInputStream(bookList.get(position).getMovie_poster());
-        Bitmap theImage = BitmapFactory.decodeStream(imageStream);
-        holder.movie_poster.setImageBitmap(theImage);
+        if(bookList.get(position).getMovie_poster()!=null) {
+            ByteArrayInputStream imageStream = new ByteArrayInputStream(bookList.get(position).getMovie_poster());
+            Bitmap theImage = BitmapFactory.decodeStream(imageStream);
+            holder.movie_poster.setImageBitmap(theImage);
+        }else{
+            holder.movie_poster.setImageResource(R.drawable.popular_4);
+        }
         holder.movie_title.setText(bookList.get(position).getTitle());
         holder.movie_date.setText(bookList.get(position).getRelease_date());
     }
@@ -54,22 +58,22 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView movie_poster;
         TextView movie_title,movie_date;
-        OnMovieClickListener onMovieClickListener;
-        public MyViewHolder(@NonNull View itemView, OnMovieClickListener onMovieClickListener) {
+        OnBookClickListener onBookClickListener;
+        public MyViewHolder(@NonNull View itemView, OnBookClickListener onBookClickListener) {
             super(itemView);
-            this.onMovieClickListener = onMovieClickListener;
-            movie_poster = itemView.findViewById(R.id.movie_card_poster);
-            movie_title = itemView.findViewById(R.id.movie_card_title);
-            movie_date = itemView.findViewById(R.id.movie_card_date);
+            this.onBookClickListener = onBookClickListener;
+            movie_poster = itemView.findViewById(R.id.book_card_poster);
+            movie_title = itemView.findViewById(R.id.book_card_title);
+            movie_date = itemView.findViewById(R.id.book_card_date);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            onMovieClickListener.OnMovieClick(getAdapterPosition());
+            onBookClickListener.OnBookClick(getAdapterPosition());
         }
     }
-    public interface OnMovieClickListener{
-        void OnMovieClick(int position);
+    public interface OnBookClickListener {
+        void OnBookClick(int position);
     }
 }

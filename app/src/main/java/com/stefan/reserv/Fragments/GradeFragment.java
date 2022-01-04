@@ -11,9 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.stefan.reserv.Adapter.GradeAdapter;
+import com.stefan.reserv.Adapter.ClasaAdapter;
 import com.stefan.reserv.Database.MyDatabaseHelper;
-import com.stefan.reserv.Model.Grade;
+import com.stefan.reserv.Model.Clasa;
 import com.stefan.reserv.R;
 
 import java.util.ArrayList;
@@ -21,9 +21,9 @@ import java.util.ArrayList;
 public class GradeFragment extends Fragment {
     RecyclerView recyclerView;
     MyDatabaseHelper myDB;
-    GradeAdapter adapter;
-    ArrayList<Grade> gradeList;
-    Grade grade = null;
+    ClasaAdapter adapter;
+    ArrayList<Clasa> clasaList;
+    Clasa clasa = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -31,21 +31,21 @@ public class GradeFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.cinema_RecyclerView);
         myDB = new MyDatabaseHelper(getContext());
-        gradeList = new ArrayList<>();
-        adapter = new GradeAdapter(getContext(), gradeList);
+        clasaList = new ArrayList<>();
+        adapter = new ClasaAdapter(getContext(), clasaList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
     }
 
     void displayData() {
-        Cursor cursor = myDB.readAllGradeData();
+        Cursor cursor = myDB.viewClase();
         if (cursor.getCount() == 0) {
             Toast.makeText(getContext(), "No data.", Toast.LENGTH_SHORT).show();
         } else {
             while (cursor.moveToNext()) {
-                grade = new Grade(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3));
-                gradeList.add(grade);
+                clasa = new Clasa(cursor.getString(0), cursor.getString(1));
+                clasaList.add(clasa);
             }
             adapter.notifyDataSetChanged();
         }
@@ -54,7 +54,7 @@ public class GradeFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        gradeList.clear();
+        clasaList.clear();
     }
 
     @Override

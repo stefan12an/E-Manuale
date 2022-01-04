@@ -7,7 +7,10 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.stefan.reserv.Database.MyDatabaseHelper;
 import com.stefan.reserv.Utils.PreferenceUtils;
+
+import java.io.IOException;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -16,13 +19,15 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-                finish();
+                if (PreferenceUtils.getEmail(SplashActivity.this) != null && !PreferenceUtils.getEmail(SplashActivity.this).equals("")) {
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                } else {
+                    startActivity(new Intent(SplashActivity.this, PreLogReg.class));
+                }
             }
         }, 1000);
     }

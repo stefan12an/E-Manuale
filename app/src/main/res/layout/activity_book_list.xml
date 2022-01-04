@@ -10,7 +10,7 @@
     <include layout="@layout/action_bar" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/movie_list_recyclerView"
+        android:id="@+id/book_list_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"

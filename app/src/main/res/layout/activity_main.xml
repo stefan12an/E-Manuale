@@ -3,37 +3,39 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
-    tools:openDrawer="start"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ScrollView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <include layout="@layout/action_bar" />
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <include layout="@layout/action_bar" />
 
             <FrameLayout
                 android:id="@+id/flFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-        </LinearLayout>
-    </ScrollView>
+        </ScrollView>
+    </LinearLayout>
+
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/NavigationView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:headerLayout="@layout/nav_header"
         android:backgroundTint="@color/white"
+        app:headerLayout="@layout/nav_header"
         app:itemIconTint="@drawable/drawer_item_color"
         app:itemTextColor="@drawable/drawer_item_color"
         app:menu="@menu/drawer_menu">
@@ -49,9 +51,9 @@
                 android:id="@+id/logout_button"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                app:cardBackgroundColor="@color/white"
                 android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/white">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"

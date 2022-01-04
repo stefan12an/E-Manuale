@@ -68,13 +68,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String email = PreferenceUtils.getEmail(this);
             String pass = PreferenceUtils.getPassword(this);
             String role = PreferenceUtils.getRole(this);
+            String grade = PreferenceUtils.getGradeId(this);
             if (PreferenceUtils.getPic(this) != null) {
                 pic = PreferenceUtils.getPic(this);
             }
             if (pic == null) {
-                current_user = new User(id, username, email, pass, role);
+                current_user = new User(id, username, email, pass, role, grade);
             } else {
-                current_user = new User(id, username, email, pass, role, pic);
+                current_user = new User(id, username, email, pass, role, pic, grade);
             }
         }
         user_email.setText(current_user.getEmail());
