@@ -80,7 +80,6 @@ public class Book implements Parcelable {
         return 0;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
@@ -88,13 +87,13 @@ public class Book implements Parcelable {
         dest.writeString(release_date);
         dest.writeByteArray(book_poster);
         dest.writeString(author);
-        dest.writeBoolean(favorit);
+        dest.writeInt(favorit ? 1 : 0);
         dest.writeString(id_clasa);
         dest.writeString(id_materie);
     }
+
     public static final Parcelable.Creator<Book> CREATOR
             = new Parcelable.Creator<Book>() {
-        @RequiresApi(api = Build.VERSION_CODES.Q)
         public Book createFromParcel(Parcel in) {
             return new Book(in);
         }
@@ -104,14 +103,13 @@ public class Book implements Parcelable {
         }
     };
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     private Book(Parcel in) {
         id = in.readString();
         title = in.readString();
         release_date = in.readString();
         book_poster = in.createByteArray();
         author = in.readString();
-        favorit = in.readBoolean();
+        favorit = in.readInt() == 1;
         id_clasa = in.readString();
         id_materie = in.readString();
     }
