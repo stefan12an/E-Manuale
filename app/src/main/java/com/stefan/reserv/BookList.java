@@ -63,7 +63,12 @@ public class BookList extends AppCompatActivity implements BookListAdapter.OnBoo
         bookRv.setAdapter(bookListAdapter);
         bookRv.setLayoutManager(new LinearLayoutManager(this));
         bookRv.addItemDecoration(dividerItemDecoration);
-        displayAllMovies();
+        Thread thread = new Thread(){
+            public void run(){
+                displayAllMovies();
+            }
+        };
+        thread.start();
     }
 
     void displayAllMovies() {

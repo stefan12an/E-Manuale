@@ -185,7 +185,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
-            db.close();
         }
     }
 
@@ -314,7 +313,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor readAllBookSpecificGenreData(@NonNull Book book) {
         String query1 = null;
-        String query2 = null;
         String query = "SELECT id_materie, id_clasa FROM " + BOOK_TABLE_NAME + " WHERE id= '" + book.getId() + "';";
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -326,12 +324,22 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         }
         while (cursor.moveToNext()) {
             query1 = "SELECT name FROM " + MATERIE_TABLE_NAME + " WHERE id= '" + cursor.getString(0) + "';";
-            query2 = "SELECT name FROM " + CLASA_TABLE_NAME + " WHERE id= '" + cursor.getString(1) + "';";
         }
         if (db != null) {
             cursor2 = db.rawQuery(query1, null);
         }
         return cursor2;
+    }
+
+    public Cursor viewMaterie(int id){
+        String query = "SELECT * FROM " + MATERIE_TABLE_NAME + " WHERE id = '" + id + "';";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+        return cursor;
     }
 
     public void insertBooks(String[] name, String materie, String clasa) {
@@ -364,6 +372,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             String date = format1.format(currentTime);
             cv.put(BOOK_COLUMN_TITLE, s);
             cv.put(BOOK_COLUMN_RELEASE_DATE, date);
+            cv.put(BOOK_COLUMN_FAVORIT, 0);
             cv.put(BOOK_COLUMN_ID_MATERIE, materie_aleasa);
             cv.put(BOOK_COLUMN_ID_CLASA, clasa_aleasa);
             long result = db_w.insert(BOOK_TABLE_NAME, null, cv);
@@ -372,6 +381,23 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             } else {
                 Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    //##########################UPDATE########################################
+
+    public void updateFavorite(String bookId, Boolean status){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        if(status) {
+            cv.put("favorit", 1);
+        }else
+            cv.put("favorit", 0);
+        long result = db.update(BOOK_TABLE_NAME, cv, "id=?", new String[]{bookId});
+        if (result == -1) {
+            Toast.makeText(context, "Failed to update data", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Successfully updated data", Toast.LENGTH_SHORT).show();
         }
     }
 

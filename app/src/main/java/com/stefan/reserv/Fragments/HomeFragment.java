@@ -10,6 +10,8 @@ import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.barteksc.pdfviewer.PDFView;
 import com.stefan.reserv.Adapter.MaterieAdapter;
 import com.stefan.reserv.Adapter.FavoriteBooksAdapter;
 import com.stefan.reserv.Database.MyDatabaseHelper;
@@ -74,9 +77,15 @@ public class HomeFragment extends Fragment implements FavoriteBooksAdapter.OnFav
         see_more_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), BookList.class);
-                i.putExtra("current_user", current_user);
-                startActivity(i);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("current_user", current_user);
+                Fragment fragment = new FavoritesFragment();
+                fragment.setArguments(bundle);
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.flFragment, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
         add_books.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +98,7 @@ public class HomeFragment extends Fragment implements FavoriteBooksAdapter.OnFav
                     e.printStackTrace();
                 }
                 Log.e(TAG, "onClick: " + Arrays.toString(files));
-                myDB.insertBooks(files,"Matematica", "7");
+                myDB.insertBooks(files, "Matematică", "7");
             }
         });
         return view;
@@ -101,8 +110,12 @@ public class HomeFragment extends Fragment implements FavoriteBooksAdapter.OnFav
             Toast.makeText(getContext(), "No popular movies.", Toast.LENGTH_SHORT).show();
         } else {
             while (cursor.moveToNext()) {
-                book = new Book(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3), cursor.getString(4), Boolean.getBoolean(cursor.getString(5)), cursor.getString(6), cursor.getString(7));
-                bookList.add(book);
+                boolean favorit;
+                favorit = Integer.parseInt(cursor.getString(5)) == 1;
+                book = new Book(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3), cursor.getString(4), favorit, cursor.getString(6), cursor.getString(7));
+                if (book.getFavorit()) {
+                    bookList.add(book);
+                }
             }
             movie_adapter.notifyDataSetChanged();
         }
@@ -130,7 +143,12 @@ public class HomeFragment extends Fragment implements FavoriteBooksAdapter.OnFav
     @Override
     public void onResume() {
         super.onResume();
-        displayFavoriteBooks();
+        Thread thread = new Thread(){
+            public void run(){
+                displayFavoriteBooks();
+            }
+        };
+        thread.start();
         displayMaterii();
     }
 

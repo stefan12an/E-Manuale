@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.barteksc.pdfviewer.PDFView;
 import com.stefan.reserv.Model.Book;
 import com.stefan.reserv.R;
 
@@ -39,13 +40,14 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        if(bookList.get(position).getMovie_poster()!=null) {
-            ByteArrayInputStream imageStream = new ByteArrayInputStream(bookList.get(position).getMovie_poster());
-            Bitmap theImage = BitmapFactory.decodeStream(imageStream);
-            holder.movie_poster.setImageBitmap(theImage);
-        }else{
-            holder.movie_poster.setImageResource(R.drawable.popular_4);
-        }
+//        if(bookList.get(position).getMovie_poster()!=null) {
+//            ByteArrayInputStream imageStream = new ByteArrayInputStream(bookList.get(position).getMovie_poster());
+//            Bitmap theImage = BitmapFactory.decodeStream(imageStream);
+//            holder.movie_poster.setImageBitmap(theImage);
+//        }else{
+//            holder.movie_poster.setImageResource(R.drawable.book_placeholder);
+//        }
+        holder.movie_poster.fromAsset("PDF/" + bookList.get(position).getTitle()).pages(0).load();
         holder.movie_title.setText(bookList.get(position).getTitle());
         holder.movie_date.setText(bookList.get(position).getRelease_date());
     }
@@ -56,7 +58,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView movie_poster;
+        PDFView movie_poster;
         TextView movie_title,movie_date;
         OnBookClickListener onBookClickListener;
         public MyViewHolder(@NonNull View itemView, OnBookClickListener onBookClickListener) {

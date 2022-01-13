@@ -22,7 +22,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.stefan.reserv.Add.QuickAddGrade;
 import com.stefan.reserv.Add.QuickAddGenre;
 import com.stefan.reserv.Add.QuickAddBook;
-import com.stefan.reserv.Fragments.GradeFragment;
+import com.stefan.reserv.Fragments.FavoritesFragment;
 import com.stefan.reserv.Fragments.HomeFragment;
 import com.stefan.reserv.Fragments.ProfileFragment;
 import com.stefan.reserv.Model.Book;
@@ -153,9 +153,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, homeFragment).commit();
                 break;
             case R.id.nav_cinema:
-                GradeFragment gradeFragment = new GradeFragment();
-                gradeFragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, gradeFragment).commit();
+                FavoritesFragment favoritesFragment = new FavoritesFragment();
+                favoritesFragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, favoritesFragment).commit();
                 break;
             case R.id.nav_movie:
                 Intent i = new Intent(this, BookList.class);
