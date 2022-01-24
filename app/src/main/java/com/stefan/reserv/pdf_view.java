@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
@@ -19,15 +21,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
 import com.stefan.reserv.Adapter.PdfDocumentAdapter;
 import com.stefan.reserv.Model.Book;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class pdf_view extends AppCompatActivity {
     private PDFView pdfView;
     private Book selected_book;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +45,21 @@ public class pdf_view extends AppCompatActivity {
             selected_book = bundle.getParcelable("selected_book");
         }
         pdfView = findViewById(R.id.pdfView);
-        pdfView.fromAsset("PDF/" + selected_book.getTitle()).load();
+        Context context_asset;
+        AssetManager assetManager;
+        InputStream inputStream = null;
+        try { // Initialize context
+            context_asset = this.createPackageContext("com.stefan.reserv", 0);
+            // using AssetManager class we get assets
+            assetManager = context_asset.getAssets();
+            inputStream = assetManager.open("PDF/" + selected_book.getTitle());
+            /* videoFileName is file name that needs to be accessed. Here if you saved assets in sub-directory then access like : "subdirectory/asset-name" */
+            // String[] list = assetManager.list(""); // returns entire list of assets in directory
+        } catch (PackageManager.NameNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
+        pdfView.fromStream(inputStream).load();
+        pdfView.setVerticalScrollBarEnabled(true);
     }
 
     @Override

@@ -4,6 +4,8 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -23,7 +25,10 @@ import com.stefan.reserv.Model.Book;
 import com.stefan.reserv.R;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class FavoriteBooksAdapter extends RecyclerView.Adapter<FavoriteBooksAdapter.MyViewHolder> {
 
@@ -54,7 +59,22 @@ public class FavoriteBooksAdapter extends RecyclerView.Adapter<FavoriteBooksAdap
 //        }else{
 //            holder.cinema_photo_imv.setImageResource(R.drawable.book_placeholder);
 //        }
-        Thread thread = new Thread(() -> holder.cinema_photo_imv.fromAsset("PDF/" + bookList.get(position).getTitle()).pages(0).onTap(new OnTapListener() {
+        Context context_asset;
+        AssetManager assetManager;
+        InputStream inputStream = null;
+        try { // Initialize context
+            context_asset = context.createPackageContext("com.stefan.reserv", 0);
+            // using AssetManager class we get assets
+            assetManager = context_asset.getAssets();
+            Log.e(TAG, "onBindViewHolder: " + Arrays.toString(assetManager.list("PDF/")));
+            inputStream = assetManager.open("PDF/" + bookList.get(position).getTitle());
+            /* videoFileName is file name that needs to be accessed. Here if you saved assets in sub-directory then access like : "subdirectory/asset-name" */
+            // String[] list = assetManager.list(""); // returns entire list of assets in directory
+        } catch (PackageManager.NameNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
+        InputStream finalInputStream = inputStream;
+        Thread thread = new Thread(() -> holder.cinema_photo_imv.fromStream(finalInputStream).pages(0).onTap(new OnTapListener() {
             @Override
             public boolean onTap(MotionEvent e) {
                 Intent i = new Intent(context, BookView.class);

@@ -28,6 +28,7 @@ public class SplashActivity extends AppCompatActivity {
                 } else {
                     startActivity(new Intent(SplashActivity.this, PreLogReg.class));
                 }
+                finish();
             }
         }, 1000);
     }

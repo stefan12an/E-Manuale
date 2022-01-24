@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, favoritesFragment).commit();
                 break;
             case R.id.nav_movie:
-                Intent i = new Intent(this, BookList.class);
+                Intent i = new Intent(this, FilterMaterie.class);
                 i.putExtra("current_user", current_user);
                 startActivity(i);
                 break;

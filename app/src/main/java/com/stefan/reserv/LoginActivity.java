@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
                         finish();
                         Toast.makeText(LoginActivity.this, "Logged in successfully", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(LoginActivity.this, "This user is not registered", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Nu există un cont cu această adresă de e-mail sau parolă", Toast.LENGTH_SHORT).show();
                         Log.e(TAG, login_email.getText().toString().trim() + " " + login_password.getText().toString().trim());
                     }
                 } else {

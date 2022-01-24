@@ -48,6 +48,8 @@ public class BookList extends AppCompatActivity implements BookListAdapter.OnBoo
             current_user = bundle.getParcelable("current_user");
             if (getIntent().hasExtra("filter_materie")) {
                 filter_materie = bundle.getString("filter_materie");
+            }else {
+                filter_materie = null;
             }
         }
         Log.e(TAG, "onCreate: Filtered genre = " + filter_materie + ", " + current_user.getRole());
@@ -63,11 +65,7 @@ public class BookList extends AppCompatActivity implements BookListAdapter.OnBoo
         bookRv.setAdapter(bookListAdapter);
         bookRv.setLayoutManager(new LinearLayoutManager(this));
         bookRv.addItemDecoration(dividerItemDecoration);
-        Thread thread = new Thread(){
-            public void run(){
-                displayAllMovies();
-            }
-        };
+        Thread thread = new Thread(() -> displayAllMovies());
         thread.start();
     }
 
@@ -77,7 +75,8 @@ public class BookList extends AppCompatActivity implements BookListAdapter.OnBoo
             Toast.makeText(this, "No data.", Toast.LENGTH_SHORT).show();
         } else {
             while (cursor.moveToNext()) {
-                book = new Book(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3), cursor.getString(4), Boolean.getBoolean(cursor.getString(5)), cursor.getString(6), cursor.getString(7));
+                Boolean favorit = Integer.parseInt(cursor.getString(5)) == 1;
+                book = new Book(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getBlob(3), cursor.getString(4), favorit, cursor.getString(6), cursor.getString(7));
                 bookList.add(book);
             }
             bookListAdapter.notifyDataSetChanged();

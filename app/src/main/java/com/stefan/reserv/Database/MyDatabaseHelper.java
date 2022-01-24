@@ -4,6 +4,8 @@ import static android.content.ContentValues.TAG;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -145,7 +147,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         }
         switch (Objects.requireNonNull(cursor).getCount()) {
             case 0:
-                Toast.makeText(context, "There is no user registered with these credentials", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Nu a fost găsit un cont asociat acestei adrese de e-mail!", Toast.LENGTH_SHORT).show();
                 return null;
             case 1:
                 return cursor;
@@ -182,9 +184,9 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         cv.put(USER_COLUMN_ID_GRADE, grade_id);
         long result = db.insert(USER_TABLE_NAME, null, cv);
         if (result == -1) {
-            Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "A apărut o eroare!", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Contul a fost creat cu succes!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -238,12 +240,11 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 //            Log.e(TAG, "onUpgrade: " + grades.get(i));
             cv.put(CLASA_COLUMN_NAME, grades.get(i));
             long result = db.insert(CLASA_TABLE_NAME, null, cv);
-            if (result == -1) {
-                Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
-            }
-//            db.execSQL(grades_query);
+//            if (result == -1) {
+//                Toast.makeText(context, "Failed to add data", Toast.LENGTH_SHORT).show();
+//            } else {
+//                Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
+//            }
         }
     }
 
@@ -292,6 +293,16 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public Cursor ala(User user){
+        Cursor cursor = null;
+        String query1 = "SELECT DISTINCT id_materie FROM " + BOOK_TABLE_NAME + " WHERE id_clasa= '" + user.getId_clasa() + "';";
+        SQLiteDatabase db = this.getReadableDatabase();
+        if (db != null) {
+            cursor = db.rawQuery(query1, null);
+        }
+        return cursor;
+    }
+
     public Cursor readAllBookData(String filter_genre, User user) {
         String query;
         if (filter_genre == null) {
@@ -301,6 +312,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                     + MATERIE_TABLE_NAME + " AS M ON M.id = B.id_materie WHERE M.name = '"
                     + filter_genre + "' AND B.id_clasa= '" + user.getId_clasa() + "';";
         }
+
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = null;
@@ -342,7 +354,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public void insertBooks(String[] name, String materie, String clasa) {
+    public void insertBooks(String name, String materie, String clasa) {
         String materie_aleasa = null;
         String clasa_aleasa = null;
         SQLiteDatabase db_r = this.getReadableDatabase();
@@ -365,12 +377,11 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             if (!cursor_clasa.moveToNext()) break;
             clasa_aleasa = cursor_clasa.getString(0);
         }
-        for (String s : name) {
             ContentValues cv = new ContentValues();
             Date currentTime = Calendar.getInstance().getTime();
             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
             String date = format1.format(currentTime);
-            cv.put(BOOK_COLUMN_TITLE, s);
+            cv.put(BOOK_COLUMN_TITLE, name);
             cv.put(BOOK_COLUMN_RELEASE_DATE, date);
             cv.put(BOOK_COLUMN_FAVORIT, 0);
             cv.put(BOOK_COLUMN_ID_MATERIE, materie_aleasa);
@@ -381,7 +392,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             } else {
                 Toast.makeText(context, "Successfully to add data", Toast.LENGTH_SHORT).show();
             }
-        }
     }
 
     //##########################UPDATE########################################
@@ -397,11 +407,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         if (result == -1) {
             Toast.makeText(context, "Failed to update data", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, "Successfully updated data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Manual adăugat la favorite cu succes!", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void copyDatabase() {
+        Context context_asset;
+        AssetManager assetManager = null;
         this.getReadableDatabase();
         Log.i("Database",
                 "New database is being copied to device!");
@@ -410,8 +422,18 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         int length;
         // Open your local db as the input stream
         InputStream myInput = null;
+        try { // Initialize context
+             context_asset = context.createPackageContext("com.stefan.reserv", 0);
+            // using AssetManager class we get assets
+            assetManager = context_asset.getAssets();
+            /* videoFileName is file name that needs to be accessed. Here if you saved assets in sub-directory then access like : "subdirectory/asset-name" */
+            // String[] list = assetManager.list(""); // returns entire list of assets in directory
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         try {
-            myInput = context.getAssets().open("Database/" + DATABASE_NAME);
+            assert assetManager != null;
+            myInput = assetManager.open("Database/" + DATABASE_NAME);
             // transfer bytes from the inputfile to the
             // outputfile
             myOutput = new FileOutputStream(DATABASE_PATH);

@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../layout/custom_preview.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.24722222222222223" />
         <entry key="app/src/main/res/drawable/anim_slideshow.xml" value="0.2518518518518518" />
         <entry key="app/src/main/res/drawable/devider.xml" value="0.134375" />
@@ -12,6 +13,7 @@
         <entry key="app/src/main/res/layout/activity_book_list.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/activity_book_view.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/activity_copy_database.xml" value="0.3098958333333333" />
+        <entry key="app/src/main/res/layout/activity_filter_materie.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.2953125" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2953125" />
         <entry key="app/src/main/res/layout/activity_movie_list.xml" value="0.28125" />
@@ -24,10 +26,11 @@
         <entry key="app/src/main/res/layout/activity_quick_add_genre.xml" value="0.2953125" />
         <entry key="app/src/main/res/layout/activity_quick_add_movie.xml" value="0.2953125" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.3098958333333333" />
-        <entry key="app/src/main/res/layout/activity_splash.xml" value="0.29583333333333334" />
+        <entry key="app/src/main/res/layout/activity_splash.xml" value="0.21528682368776667" />
         <entry key="app/src/main/res/layout/each_book.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/each_cinema.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/each_favorite_book.xml" value="0.20462962962962963" />
+        <entry key="app/src/main/res/layout/each_filter_materie.xml" value="0.25" />
         <entry key="app/src/main/res/layout/each_genre.xml" value="0.2953125" />
         <entry key="app/src/main/res/layout/each_grade.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/each_movie.xml" value="0.335" />
@@ -37,8 +40,9 @@
         <entry key="app/src/main/res/layout/fragment_grade.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.22037037037037038" />
         <entry key="app/src/main/res/layout/fragment_movie.xml" value="0.2953125" />
+        <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/fragment_view_movie.xml" value="0.28125" />
-        <entry key="app/src/main/res/layout/nav_header.xml" value="0.22037037037037038" />
+        <entry key="app/src/main/res/layout/nav_header.xml" value="0.625" />
         <entry key="app/src/main/res/layout/pdf_view.xml" value="0.2421875" />
         <entry key="app/src/main/res/layout/spinner_item.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/menu/book_options.xml" value="0.3098958333333333" />

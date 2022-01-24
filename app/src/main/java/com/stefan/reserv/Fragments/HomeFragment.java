@@ -49,7 +49,7 @@ public class HomeFragment extends Fragment implements FavoriteBooksAdapter.OnFav
     private ArrayList<String> genreList;
     private Book book = null;
     private User current_user;
-    private Button add_books;
+//    private Button add_books;
     private String[] files;
 
     @Override
@@ -58,7 +58,7 @@ public class HomeFragment extends Fragment implements FavoriteBooksAdapter.OnFav
         bookList = new ArrayList<>();
         genreList = new ArrayList<>();
         myDB = new MyDatabaseHelper(getContext());
-        add_books = view.findViewById(R.id.add_books);
+//        add_books = view.findViewById(R.id.add_books);
         see_more_btn = view.findViewById(R.id.see_more_btn);
         carousel_iv = view.findViewById(R.id.carousel_iv);
         movie_adapter = new FavoriteBooksAdapter(getContext(), bookList, this);
@@ -88,19 +88,23 @@ public class HomeFragment extends Fragment implements FavoriteBooksAdapter.OnFav
                 fragmentTransaction.commit();
             }
         });
-        add_books.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AssetManager assetManager = getContext().getAssets();
-                try {
-                    files = assetManager.list("PDF");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Log.e(TAG, "onClick: " + Arrays.toString(files));
-                myDB.insertBooks(files, "Matematică", "7");
-            }
-        });
+//        add_books.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                AssetManager assetManager = getContext().getAssets();
+//                try {
+//                    files = assetManager.list("PDF");
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                Log.e(TAG, "onClick: " + Arrays.toString(files));
+//                int clasa = 7;
+//                for (String s : files) {
+//                    myDB.insertBooks(s, "Chimie", String.valueOf(clasa));
+//                    clasa++;
+//                }
+//            }
+//        });
         return view;
     }
 
@@ -127,7 +131,12 @@ public class HomeFragment extends Fragment implements FavoriteBooksAdapter.OnFav
             Toast.makeText(getContext(), "No genres.", Toast.LENGTH_SHORT).show();
         } else {
             while (cursor.moveToNext()) {
-                genreList.add(cursor.getString(1));
+                Cursor aa = myDB.ala(current_user);
+                while(aa.moveToNext()){
+                    if(cursor.getString(0).equals(aa.getString(0))){
+                        genreList.add(cursor.getString(1));
+                    }
+                }
             }
             genre_adapter.notifyDataSetChanged();
         }
@@ -143,12 +152,7 @@ public class HomeFragment extends Fragment implements FavoriteBooksAdapter.OnFav
     @Override
     public void onResume() {
         super.onResume();
-        Thread thread = new Thread(){
-            public void run(){
-                displayFavoriteBooks();
-            }
-        };
-        thread.start();
+        displayFavoriteBooks();
         displayMaterii();
     }
 
@@ -160,7 +164,6 @@ public class HomeFragment extends Fragment implements FavoriteBooksAdapter.OnFav
             i.putExtra("current_user", current_user);
         }
         startActivity(i);
-
     }
 
 

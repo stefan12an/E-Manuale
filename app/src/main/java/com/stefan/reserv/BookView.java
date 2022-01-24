@@ -9,7 +9,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,12 +35,13 @@ import com.stefan.reserv.Model.User;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BookView extends AppCompatActivity{
     private Book selected_book;
-    private TextView movie_title, movie_date;
+    private TextView movie_title, movie_date, book_clasa;
     private PDFView movie_poster;
     private MyDatabaseHelper myDB;
     private Button view_pdf;
@@ -56,20 +60,36 @@ public class BookView extends AppCompatActivity{
         movie_title = findViewById(R.id.book_preview_title);
         movie_date = findViewById(R.id.book_preview_date);
         movie_poster = findViewById(R.id.book_preview_poster);
+        book_clasa = findViewById(R.id.book_preview_clasa);
         myDB = new MyDatabaseHelper(BookView.this);
         if (getIntent().hasExtra("movie")) {
             Bundle bundle = getIntent().getExtras();
             selected_book = bundle.getParcelable("movie");
             clicked = selected_book.getFavorit();
+            Log.e(TAG, "onCreate: " + selected_book.getFavorit());
 //            Log.e(TAG, "onCreate: " + current_user.getRole() + ", " + selected_book.getTitle());
             Cursor cursor = myDB.viewMaterie(Integer.parseInt(selected_book.getId_materie()));
             int clasa = Integer.parseInt(selected_book.getId_clasa()) - 1;
             while(cursor.moveToNext()) {
                 String materie = cursor.getString(1);
-                movie_title.setText(materie + " Clasa " + clasa);
+                movie_title.setText(materie);
+                book_clasa.setText( "Clasa a " + clasa + "-a");
             }
             movie_date.setText(selected_book.getRelease_date());
-            movie_poster.fromAsset("PDF/" + selected_book.getTitle()).pages(0).load();
+            Context context_asset;
+            AssetManager assetManager;
+            InputStream inputStream = null;
+            try { // Initialize context
+                context_asset = this.createPackageContext("com.stefan.reserv", 0);
+                // using AssetManager class we get assets
+                assetManager = context_asset.getAssets();
+                inputStream = assetManager.open("PDF/" + selected_book.getTitle());
+                /* videoFileName is file name that needs to be accessed. Here if you saved assets in sub-directory then access like : "subdirectory/asset-name" */
+                // String[] list = assetManager.list(""); // returns entire list of assets in directory
+            } catch (PackageManager.NameNotFoundException | IOException e) {
+                e.printStackTrace();
+            }
+            movie_poster.fromStream(inputStream).pages(0).load();
         }
         view_pdf.setOnClickListener(new View.OnClickListener() {
             @Override

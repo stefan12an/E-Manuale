@@ -1,2 +1,3 @@
 rootProject.name = "Reserv"
 include ':app'
+include ':install_time_pdf'

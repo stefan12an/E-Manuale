@@ -7,6 +7,7 @@
     tools:context=".PreLogReg">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="45dp"
@@ -25,7 +26,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bine ai venit!"
+                android:text="Bună ziua!"
                 android:textSize="40sp"
                 android:textStyle="italic"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -38,26 +39,28 @@
 
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
         android:elevation="10dp"
         app:cardBackgroundColor="@color/warning_500"
         app:cardCornerRadius="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/cardView2">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10dp">
+            android:padding="30dp">
 
             <Button
                 android:id="@+id/go_to_register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:backgroundTint="@color/primary"
                 android:text="Inregistrați-vă"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -70,9 +73,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="Esti nou?"
+                android:text="Sunteți nou?"
                 android:textSize="20sp"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -94,13 +96,35 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Ai deja cont?"
+                android:text="Aveți deja cont?"
                 android:textSize="20sp"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="46dp"
+        android:elevation="10dp"
+        app:cardCornerRadius="10dp"
+        android:backgroundTint="@color/grey_300"
+        app:layout_constraintEnd_toEndOf="@+id/cardView3"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/cardView3"
+        app:layout_constraintTop_toBottomOf="@+id/cardView3">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="20dp"
+            android:textColor="@color/grey_800"
+            android:text="Dacă deja aveți un cont și doriți să creați unul nou, toate datele de pe contul vechi vor fi șterse!"
+            android:textAlignment="center" />
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

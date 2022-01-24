@@ -92,14 +92,15 @@ public class RegisterActivity extends AppCompatActivity {
                         if (!db.checkForDuplicateAccount(email, pass)) {
                             db.insertUserData(username, email, pass, photo, selected_grade);
                             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                            finish();
                         } else {
-                            Toast.makeText(RegisterActivity.this, "There is already an account registered to this email address", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Deja există un cont inregistrat cu această adresă de e-mail", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(RegisterActivity.this, "Please enter a valid e-mail address", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "Vă rugăm să introduceți o adresă de e-mail validă", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(RegisterActivity.this, "Please enter an e-mail and a password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "Vă rugăm să introduceți un e-mail și o parolă", Toast.LENGTH_SHORT).show();
                 }
             }
         });
